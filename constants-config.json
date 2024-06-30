@@ -1,28 +1,28 @@
 {
-  "database-id": "169b6e632b7448529120599281265ac5",
-  "author": "",
-  "public-ga-tracking-id": "",
-  "google-search-console-html-tag": "",
+  "database-id": "c1bb7112bf214a468ca60f815c8168dc",
+  "author": "Mimansa Jaiswal",
+  "public-ga-tracking-id": "G-Y0Y22DQW0R",
+  "google-search-console-html-tag":"3jM-NJxRWO3Wdy3jM_AZnFGgGezWPOX6Z3dTVlUxLaQ",
   "socials": {
-    "email": "",
-    "github": "",
-    "googlescholar": "",
-    "semanticscholar": "",
+    "email": "mailto:mimansa.jaiswal@gmail.com",
+    "github": "https://github.com/mimansajaiswal/",
+    "googlescholar": "https://scholar.google.com/citations?user=05FDs5kAAAAJ&hl=en",
+    "semanticscholar": "https://www.semanticscholar.org/author/Mimansa-Jaiswal/3036536",
     "dblp": "",
     "facebook": "",
-    "twitter": "",
-    "threads": "",
+    "twitter": "https://twitter.com/MimansaJ",
+    "threads": "https://www.threads.net/@mimansajaiswal",
     "instagram": "",
     "mastodon": "",
-    "this-github-repo": "https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog"
+    "this-github-repo": "https://github.com/mimansajaiswal/mimansajaiswal.github.io/"
   },
   "custom-domain": "",
   "base-path": "",
   "giscus": {
-    "data-repo": "nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog",
-    "data-repo-id": "R_kgDOK0FuUA",
+    "data-repo": "mimansajaiswal/mimansajaiswal.github.io",
+    "data-repo-id": "R_kgDOK0WJUA",
     "data-category": "Announcements",
-    "data-category-id": "DIC_kwDOK0FuUM4CbZ5A",
+    "data-category-id": "DIC_kwDOK0WJUM4Cba2K",
     "data-mapping": "pathname",
     "data-input-position": "top",
     "data-reactions-enabled": true
@@ -53,12 +53,12 @@
         "dark": "255 255 255"
       },
       "link": {
-        "light": "85 123 118",
-        "dark": "199 200 203"
+        "light": "67 96 132",
+        "dark": "72 152 238"
       },
       "accent": {
-        "light": "203 41 65",
-        "dark": "41 188 136"
+        "light": "93 44 187",
+        "dark": "248 246 254"
       },
       "accent-2": {
         "light": "17 17 17",
@@ -70,10 +70,10 @@
       }
     },
     "fontfamily-google-fonts": {
-      "combined-url": "https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
-      "sans-font-name": "Roboto",
+      "combined-url": "https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap",
+      "sans-font-name": "Karla",
       "serif-font-name": "",
-      "mono-font-name": "Roboto\\ Mono"
+      "mono-font-name": "Space\\ Mono"
     }
   },
   "webmention": {
@@ -90,7 +90,7 @@
     "heading_3"
   ],
   "full-preview-collections": [
-    "Stream"
+    "Blurbs"
   ],
   "hide-underscore-slugs-in-lists": true,
   "home-page-slug": "",
@@ -102,5 +102,20 @@
   },
   "full-width-tweet-embeds": false,
   "optimize-images": true,
-  "redirects": {}
+  "redirects": {
+    "/papers.html":"/papers/",
+    "/notes/case-of-llm-evals.html":"/posts/case-of-llm-evals/",
+    "/notes/no_sally_anne_pass_for_gpt4.html":"/posts/no-sally-anne-pass-for-gpt4/",
+    "/notes/capstone.html": "/posts/capstone/",
+    "/notes/explanation_annotation_interfaces.html": "/posts/explanation-annotation-interfaces/",
+    "/notes/controlled_evaluation_of_explanations.html": "/posts/controlled-evaluation-of-explanations/",
+    "/blurbs.html": "/collections/blurbs/",
+    "/personal_notes/phd_acknowledgment.html": "/posts/phd-acknowledgment/",
+    "/personal_notes/life_photo_album.html": "/posts/life-photo-album/",
+    "/personal_notes/personal_academic_website.html": "/posts/personal-academic-website/",
+    "/personal_notes/mac_softwares.html":"/personal_notes/mac-softwares/",
+    "/updates.html": "/updates/",
+    "/personal_notes/": "/collections/personal-notes/",
+    "/notes/": "/collections/research-notes/"
+  }
 }
