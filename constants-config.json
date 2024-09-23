@@ -117,11 +117,13 @@
 		"/personal_notes/phd_acknowledgment.html": "/posts/phd-acknowledgment/",
 		"/personal_notes/life_photo_album.html": "/posts/life-photo-album/",
 		"/personal_notes/personal_academic_website.html": "/posts/personal-academic-website/",
-		"/personal_notes/mac_softwares.html": "/personal_notes/mac-softwares/",
+		"/personal_notes/mac_softwares.html": "/posts/mac-softwares/",
 		"/updates.html": "/updates/",
 		"/personal_notes/": "/collections/personal/",
 		"/notes/": "/collections/research/",
 		"/research-notes/": "/collections/research/",
-		"/personal-notes/": "/collections/personal/"
+		"/personal-notes/": "/collections/personal/",
+    "/publications-pdf/sally_anne_workshop.pdf":"/notion/f2e4c0b9-5252-48f6-9c6c-935680f0a7bf/Sally_Anne_Test___EvalEval2024Sub.pdf",
+    "/publications-pdf/qualitative-gender-workshop.pdf":"/notion/310d7c50-abc7-4c26-9572-04e355959f32/Qualitatively_Studying_Gender_Biases_in_LLMs___EvalEval2024Sub.pdf",
 	}
 }
