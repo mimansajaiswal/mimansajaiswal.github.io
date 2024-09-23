@@ -123,7 +123,7 @@
 		"/notes/": "/collections/research/",
 		"/research-notes/": "/collections/research/",
 		"/personal-notes/": "/collections/personal/",
-    "/publications-pdf/sally_anne_workshop.pdf":"/notion/f2e4c0b9-5252-48f6-9c6c-935680f0a7bf/Sally_Anne_Test___EvalEval2024Sub.pdf",
-    "/publications-pdf/qualitative-gender-workshop.pdf":"/notion/310d7c50-abc7-4c26-9572-04e355959f32/Qualitatively_Studying_Gender_Biases_in_LLMs___EvalEval2024Sub.pdf",
+    "/papers-pdf/sally_anne_workshop.pdf":"/notion/f2e4c0b9-5252-48f6-9c6c-935680f0a7bf/Sally_Anne_Test___EvalEval2024Sub.pdf",
+    "/papers-pdf/qualitative-gender-workshop.pdf":"/notion/310d7c50-abc7-4c26-9572-04e355959f32/Qualitatively_Studying_Gender_Biases_in_LLMs___EvalEval2024Sub.pdf",
 	}
 }
