@@ -80,10 +80,10 @@
 			}
 		},
 		"fontfamily-google-fonts": {
-			"combined-url": "https://fonts.googleapis.com/css2?family=Inter:slnt,wght@-10..0,100..900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap",
-			"sans-font-name": "Inter",
+			"combined-url": "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=Geist:wght@100..900&display=swap",
+			"sans-font-name": "Geist",
 			"serif-font-name": "",
-			"mono-font-name": "Space\\ Mono"
+			"mono-font-name": "Geist\\ Mono"
 		}
 	},
 	"webmention": {
