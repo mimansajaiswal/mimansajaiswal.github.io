@@ -102,8 +102,8 @@
 	"og-setup": {
 		"columns": 2,
 		"excerpt": true,
-		"title-font-url": "https://fonts.googleapis.com/css2?family=Kreon:wght@500&display=swap",
-		"footnote-font-url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap"
+		"title-font-url": "https://fonts.googleapis.com/css2?family=Geist:wght@500&display=swap",
+		"footnote-font-url": "https://fonts.googleapis.com/css2?family=Geist+Mono:wght@600&display=swap"
 	},
 	"full-width-tweet-embeds": false,
 	"optimize-images": true,
