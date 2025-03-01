@@ -70,7 +70,21 @@ jobs:
         run: |
           gh cache list --json key --jq '.[].key' | grep -E '.*(tmp|public).*(web|blog)trotion' | xargs -I {} gh cache delete {}
         env:
-          GH_TOKEN: ${{ env.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
+
+      - name: Clear Previous `old-package-json-cache` (if needed)
+        if: env.DELETE_CACHES_GH_TOKEN != ''
+        run: |
+          gh cache list --key old-package-json-cache- --json key --jq '.[].key' | xargs -I {} gh cache delete {}
+        env:
+          GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
+
+      - name: Clear Previous constants config Cache (if needed)
+        if: env.DELETE_CACHES_GH_TOKEN != ''
+        run: |
+          gh cache list --key constants-config- --json key --jq '.[].key' | xargs -I {} gh cache delete {}
+        env:
+          GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
 
       # Idea from https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
 
@@ -94,6 +108,21 @@ jobs:
         with:
           path: ./public
           key: public-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Copy package.json to old_package.json
+        run: cp ./package.json ./old_package.json
+
+      - name: Save old_package.json Cache
+        uses: actions/cache/save@v4
+        with:
+          path: ./old_package.json
+          key: old-package-json-cache-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Save Cached constants-config
+        uses: actions/cache/save@v4
+        with:
+          path: ./constants-config.json
+          key: constants-config-${{ hashFiles(format('{0}/constants-config.json', env.BUILD_PATH)) }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
