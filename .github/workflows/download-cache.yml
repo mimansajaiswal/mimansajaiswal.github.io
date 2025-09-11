@@ -15,12 +15,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Restore cache
+      - name: Restore cache (with prefix)
         id: cache
         uses: actions/cache@v4
         with:
           path: ./restored-cache
-          key: ${{ github.event.inputs.cache_key }}
+          key: constants-config-6aeccd0b58dc0b20b6986290c1e85aa4277953309679d193e99ba56d8200ba4b
+          restore-keys: |
+            constants-config-
 
       - name: List restored cache contents
         if: steps.cache.outputs.cache-hit == 'true'
