@@ -4,7 +4,7 @@
 	// This section configures the connection to your Notion database.
 	notion: {
 		// (Preferred) The Data Source ID for your Notion integration. This is a more stable way to connect to your database. You can find this in UI here: https://developers.notion.com/reference/retrieve-a-data-source#finding-a-data-source-id
-		"data-source-id": "f6e3813f-eb93-4a77-bbf4-81ad653d63ba",
+		"data-source-id": "d5deeef4-5cfe-4746-9bc7-5addfb2519cc",
 		// (Fallback) The classic Database ID. This is used only if 'data-source-id' is empty. The integration will automatically find the Data Source ID and use the first one from this if needed.
 		"database-id": "",
 	},
@@ -13,7 +13,7 @@
 	// Basic details about your website used for metadata, RSS feeds, and SEO.
 	"site-info": {
 		// Your name or the name of your site's author. Used in RSS feeds, OG images etc and other metadata for attribution.
-		author: "",
+		author: "Mimansa Jaiswal",
 		// Your custom domain name (e.g., "example.com"). Important: Do NOT include "https://" or a trailing slash. Leave this empty if you are deploying to a service like Vercel or Netlify without a custom domain.
 		"custom-domain": "",
 		// The sub-directory your site is deployed in (e.g., "/blog"). Leave empty if your site is at the root of your domain. Must start with a forward slash "/" if used.
@@ -26,13 +26,13 @@
 		// The slug of the Notion page you want to use as your website's home page.
 		"home-page-slug": "home",
 		// If true, a section with the 5 most recent posts will be displayed on the home page.
-		"recent-posts-on-home-page": true,
+		"recent-posts-on-home-page": false,
 		// The number of posts to show on each page of a paginated list (e.g., /posts, /tags/mytag).
 		"number-of-posts-per-page": 10,
 		// The name of the Notion 'Collection' property value for pages that should appear in the main navigation menu. These are treated as static pages (e.g., 'About', 'Contact') rather than blog posts.
 		"menu-pages-collection": "main",
 		// An array of 'Collection' names where posts should be displayed in full on list pages. Useful for microblogs or "stream" style collections where showing the full content is desired.
-		"full-preview-collections": ["Stream"],
+		"full-preview-collections": ["Blurbs"],
 		// If true, any post with a slug starting with an underscore (e.g., "_draft-post") will be hidden from all lists (home page, collections, tags), from sitemap and search. The page will still be built and accessible via its direct URL.
 		"hide-underscore-slugs-in-lists": true,
 	},
@@ -45,33 +45,33 @@
 		colors: {
 			// Background colors
 			bg: {
-				light: "249 249 249",
-				dark: "28 30 32",
+				light: "253 250 247",
+				dark: "28 25 23",
 			},
 			// Main text colors
 			text: {
-				light: "34 39 42",
-				dark: "255 255 255",
+				light: "45 42 39",
+				dark: "245 242 238",
 			},
 			// Link colors
 			link: {
-				light: "85 123 118",
-				dark: "199 200 203",
+				light: "60 75 95",
+				dark: "140 165 185",
 			},
 			// Primary accent color (e.g., for titles, highlights)
 			accent: {
-				light: "203 41 65",
-				dark: "41 188 136",
+				light: "95 50 140",
+				dark: "220 210 240",
 			},
 			// Secondary accent color (e.g., for borders, subtle highlights)
 			"accent-2": {
-				light: "17 17 17",
-				dark: "237 237 237",
+				light: "80 70 60",
+				dark: "210 200 190",
 			},
 			// Color for blockquotes and other special text
 			quote: {
-				light: "203 41 65",
-				dark: "205 254 183",
+				light: "180 50 60",
+				dark: "200 220 180",
 			},
 		},
 		"fontfamily-google-fonts": {
@@ -79,10 +79,10 @@
 			// We automatically load weights [400, 500, 600, 700] and styles [normal, italic] for all fonts (it is fine if they are not available).
 			// Main body/UI font - can be a sans-serif OR serif typeface (e.g., "Roboto", "Merriweather", "Inter")
 			// If empty and mono-font-name is set, mono will be used for everything.
-			"sans-font-name": "Roboto",
+			"sans-font-name": "Geist",
 			// Monospace font for code blocks (e.g., "Fira Code", "JetBrains Mono")
 			// No need to escape spaces in font names!
-			"mono-font-name": "Roboto Mono",
+			"mono-font-name": "Geist Mono",
 		},
 	},
 
@@ -90,23 +90,23 @@
 	// Add your social media profile URLs here. They will be displayed in the site's social list component.
 	// The keys (e.g., 'github', 'twitter') are fixed and correspond to specific icons.
 	socials: {
-		email: "mailto:your-email@example.com",
-		github: "",
-		googlescholar: "",
-		semanticscholar: "",
+		email: "mailto:mimansa.jaiswal@gmail.com",
+		github: "https://github.com/mimansajaiswal/",
+		googlescholar: "https://scholar.google.com/citations?user=05FDs5kAAAAJ&hl=en",
+		semanticscholar: "https://www.semanticscholar.org/author/Mimansa-Jaiswal/3036536",
 		dblp: "",
 		substack: "",
 		facebook: "",
-		twitter: "",
-		threads: "",
+		twitter: "https://twitter.com/MimansaJ",
+		threads: "https://www.threads.net/@mimansajaiswal",
 		instagram: "",
 		mastodon: "",
-		bluesky: "",
-		calendar: "",
+		bluesky: "https://bsky.app/profile/mimansaj.bsky.social",
+		calendar: "https://cal.com/mimansa/",
 		kofi: "",
 		"buy-me-a-coffee": "",
 		// This link is for forked repo you'll end up having. Feel free to change it to your needs.
-		"this-github-repo": "https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog",
+		"this-github-repo": "https://github.com/mimansajaiswal/mimansajaiswal.github.io/",
 	},
 
 	// === Analytics Tracking ===
@@ -114,7 +114,7 @@
 		"google-analytics": {
 			"use-ga": true,
 			// Your Google Analytics 4 Measurement ID (e.g., G-XXXXXXXXXX).
-			"public-ga-tracking-id": "",
+			"public-ga-tracking-id": "G-Y0Y22DQW0R",
 		},
 		// Umami is a privacy-focused, open-source analytics alternative to Google Analytics.
 		umami: {
@@ -128,23 +128,23 @@
 		},
 		// For verifying site ownership with Google.
 		// Paste the 'content' attribute from the meta tag provided by Google Search Console.
-		// e.g., <meta name="google-site-verification" content="YOUR_CODE_HERE" /> -> "YOUR_CODE_HERE"
-		"google-search-console-html-tag": "",
+		// e.g., <meta name="google-site-verification" content="YOUR_CODE_HERE" /> → "YOUR_CODE_HERE"
+		"google-search-console-html-tag": "3jM-NJxRWO3Wdy3jM_AZnFGgGezWPOX6Z3dTVlUxLaQ",
 	},
 
 	// === Open Graph Image Generation ===
 	// Customize the appearance of automatically generated social sharing images (OG images).
 	"og-setup": {
 		// Layout style: 1 for a single column with a background image, 2 for a side-by-side layout.
-		columns: 1,
+		columns: 2,
 		// If true, the post's excerpt will be included in the OG image.
-		excerpt: false,
+		excerpt: true,
 		// Font configuration for OG images
 		// Title and footnote can be any google font
-		"title-font-name": "Kreon",
+		"title-font-name": "Playfair Display",
 		"title-font-weight": 500, // Default: 400 (regular)
 		// Footnote font (author, date etc)
-		"footnote-font-name": "JetBrains Mono",
+		"footnote-font-name": "SUSE Mono",
 		"footnote-font-weight": 700, // Default: 400 (regular)
 	},
 
@@ -152,10 +152,10 @@
 	comments: {
 		// Giscus is a comments system powered by GitHub Discussions. It's free and open-source. Go here for the process of setting it up: https://giscus.app/
 		giscus: {
-			"data-repo": "nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog",
-			"data-repo-id": "R_kgDOK0FuUA",
+			"data-repo": "mimansajaiswal/mimansajaiswal.github.io",
+			"data-repo-id": "R_kgDOK0WJUA",
 			"data-category": "Announcements",
-			"data-category-id": "DIC_kwDOK0FuUM4CbZ5A",
+			"data-category-id": "DIC_kwDOK0WJUM4Cba2K",
 			"data-mapping": "pathname",
 			"data-input-position": "top",
 			"data-reactions-enabled": true,
@@ -163,15 +163,15 @@
 
 		// Display comments from Bluesky posts related to your blog posts.
 		"bluesky-comments": {
-			"show-comments-from-bluesky": false,
+			"show-comments-from-bluesky": true,
 			"auto-search-for-match": {
 				// If true, the site will automatically search for a Bluesky post by the specified author
 				// that contains a link to the current blog post and a specific emoji.
-				"turn-on-auto-search": false,
+				"turn-on-auto-search": true,
 				// Your Bluesky handle (e.g., "yourname.bsky.social").
-				author: "",
+				author: "mimansaj.bsky.social",
 				// The emoji used in your Bluesky post to signify it's a blog post "echo" and should be searched.
-				"echo-feed-emoji": "",
+				"echo-feed-emoji": "💬",
 			},
 		},
 
@@ -269,16 +269,17 @@
 		// === Citations Configuration ===
 		citations: {
 			// If true, a "Cite this page" section will be added to each page.
-			"add-cite-this-post-section": false,
+			"add-cite-this-post-section": true,
 			// Configure how BibTeX citations are extracted and processed.
 			"extract-and-process-bibtex-citations": {
 				// If true, enables BibTeX citation processing.
-				enabled: false,
+				enabled: true,
 				// Supported .bib file sources: GitHub Gist, GitHub repo file, Dropbox, and Google Drive public share links.
 				// Google drive and dropbox links do not provide public last-updated timestamps; these files will be fetched and processed on every build and increase processing time, but https://retorque.re/zotero-better-bibtex/ can auto-update and auto sync them.
 				//Gitub links will be checked for last-updated timestamps to avoid unnecessary re-processing but will need push or scripted auto-push to keep updated.
 				"bibtex-file-url-list": [
 					// Example: "https://gist.githubusercontent.com/username/gistid/raw/filename.bib",
+					"https://github.com/mimansajaiswal/mimansajaiswal-files-for-personal-website/blob/main/zotero-28-oct-2025.bib",
 				],
 				// The pattern for in-text citations. Supports #cite(key) for support with typst, \cite{key} for support with latex, and for support with pandoc [@key]. This will be rendered as [firstName et al, year] or [1][2] in text. Only one format is supported at a time.
 				"in-text-citation-format": "[@key]",
@@ -290,9 +291,9 @@
 					apa: false,
 				},
 				// If true, a collated bibliography section will be automatically generated at the bottom of the page.
-				"generate-bibliography-section": false,
+				"generate-bibliography-section": true,
 				// If true, show citations in the right margin on large screens (≥1024px). On smaller screens, citations will display as popovers.
-				"show-in-margin-on-large-screens": false,
+				"show-in-margin-on-large-screens": true,
 			},
 		},
 	},
@@ -301,5 +302,24 @@
 	// Create 301 redirects for old URLs to new URLs. Useful for SEO when migrating content.
 	// Format: "/old-path": "/new-path"
 	// Example: "/my-old-post.html": "/posts/my-new-post-slug/"
-	redirects: {},
+	redirects: {
+		"/papers.html": "/papers/",
+		"/notes/case-of-llm-evals.html": "/posts/case-of-llm-evals/",
+		"/notes/no_sally_anne_pass_for_gpt4.html": "/posts/no-sally-anne-pass-for-gpt4/",
+		"/notes/capstone.html": "/posts/capstone/",
+		"/notes/explanation_annotation_interfaces.html": "/posts/explanation-annotation-interfaces/",
+		"/notes/controlled_evaluation_of_explanations.html": "/posts/controlled-evaluation-of-explanations/",
+		"/blurbs.html": "/collections/blurbs/",
+		"/personal_notes/phd_acknowledgment.html": "/posts/phd-acknowledgment/",
+		"/personal_notes/life_photo_album.html": "/posts/life-photo-album/",
+		"/personal_notes/personal_academic_website.html": "/posts/personal-academic-website/",
+		"/personal_notes/mac_softwares.html": "/posts/mac-softwares/",
+		"/updates.html": "/#updates",
+		"/personal_notes/": "/collections/personal/",
+		"/notes/": "/collections/research/",
+		"/research-notes/": "/collections/research/",
+		"/personal-notes/": "/collections/personal/",
+		"/papers-pdf/sally_anne_workshop.pdf": "/notion/f2e4c0b9-5252-48f6-9c6c-935680f0a7bf/Sally_Anne_Test___EvalEval2024Sub.pdf",
+		"/papers-pdf/qualitative-gender-workshop.pdf": "/notion/310d7c50-abc7-4c26-9572-04e355959f32/Qualitatively_Studying_Gender_Biases_in_LLMs___EvalEval2024Sub.pdf",
+	},
 }
