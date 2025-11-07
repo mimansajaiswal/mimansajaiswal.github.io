@@ -79,10 +79,10 @@
 			// We automatically load weights [400, 500, 600, 700] and styles [normal, italic] for all fonts (it is fine if they are not available).
 			// Main body/UI font - can be a sans-serif OR serif typeface (e.g., "Roboto", "Merriweather", "Inter")
 			// If empty and mono-font-name is set, mono will be used for everything.
-			"sans-font-name": "Geist",
+			"sans-font-name": "Figtree",
 			// Monospace font for code blocks (e.g., "Fira Code", "JetBrains Mono")
 			// No need to escape spaces in font names!
-			"mono-font-name": "Geist Mono",
+			"mono-font-name": "Spline Sans Mono",
 		},
 	},
 
@@ -142,10 +142,10 @@
 		// Font configuration for OG images
 		// Title and footnote can be any google font
 		"title-font-name": "Playfair Display",
-		"title-font-weight": 500, // Default: 400 (regular)
+		"title-font-weight": 600, // Default: 400 (regular)
 		// Footnote font (author, date etc)
-		"footnote-font-name": "SUSE Mono",
-		"footnote-font-weight": 700, // Default: 400 (regular)
+		"footnote-font-name": "Archivo",
+		"footnote-font-weight": 600, // Default: 400 (regular)
 	},
 
 	// === Comments Configuration ===
