@@ -38,7 +38,18 @@ export function cloneRichText(richText: RichText): RichText {
 			: undefined,
 		Annotation: { ...richText.Annotation },
 		Equation: richText.Equation ? { ...richText.Equation } : undefined,
-		Mention: richText.Mention ? { ...richText.Mention } : undefined,
+		Mention: richText.Mention
+			? {
+					...richText.Mention,
+					Page: richText.Mention.Page ? { ...richText.Mention.Page } : undefined,
+					LinkMention: richText.Mention.LinkMention
+						? { ...richText.Mention.LinkMention }
+						: undefined,
+					CustomEmoji: richText.Mention.CustomEmoji
+						? { ...richText.Mention.CustomEmoji }
+						: undefined,
+				}
+			: undefined,
 		InternalHref: richText.InternalHref ? { ...richText.InternalHref } : undefined,
 	};
 }

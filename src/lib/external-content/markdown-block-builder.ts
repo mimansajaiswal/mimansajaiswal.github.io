@@ -791,12 +791,17 @@ export class MarkdownBlockBuilder {
 	private serializeMdxJsx(node: MdxJsxFlowElement | MdxJsxTextElement): string {
 		if (!node || typeof node.name !== "string" || !node.name.trim()) return "";
 
+		// Attributes that typically hold URLs and should be resolved
+		const URL_ATTRIBUTES = new Set(["href", "src", "poster", "data", "cite", "action", "formaction"]);
+
 		const serializeAttr = (attr: any): string => {
 			if (!attr || attr.type !== "mdxJsxAttribute") return "";
 			if (!attr.name) return "";
 			if (attr.value === null || typeof attr.value === "undefined") return attr.name;
 			if (typeof attr.value === "string") {
-				const resolved = this.resolveAssetUrl(attr.value);
+				const resolved = URL_ATTRIBUTES.has(attr.name.toLowerCase())
+					? this.resolveAssetUrl(attr.value)
+					: attr.value;
 				return `${attr.name}="${resolved}"`;
 			}
 			return `${attr.name}={...}`;

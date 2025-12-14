@@ -1903,7 +1903,7 @@ async function _buildPost(pageObject: responses.PageObject): Promise<Post> {
 				? prop.Excerpt.rich_text.map((richText) => richText.plain_text).join("")
 				: "",
 		FeaturedImage: featuredImage,
-		Rank: prop.Rank.number ? prop.Rank.number : 0,
+		Rank: prop.Rank?.number ?? null,
 		LastUpdatedDate: prop["Last Updated Date"]?.formula?.date
 			? prop["Last Updated Date"]?.formula.date.start
 			: "",

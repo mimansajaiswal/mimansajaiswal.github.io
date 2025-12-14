@@ -65,8 +65,15 @@ export const getMp4Videos = (media: MediaAnimatedGif | MediaVideo) => {
 
 export const getMp4Video = (media: MediaAnimatedGif | MediaVideo) => {
 	const mp4Videos = getMp4Videos(media);
-	// Skip the highest quality video and use the next quality
-	return mp4Videos.length > 1 ? mp4Videos[1] : mp4Videos[0];
+	// Skip the highest quality video and use the next quality when available
+	if (mp4Videos.length > 1) return mp4Videos[1];
+	if (mp4Videos.length === 1) return mp4Videos[0];
+
+	// Fallback: if no MP4 variants, try an HLS variant instead of crashing
+	const hlsVariant = media.video_info.variants.find(
+		(vid) => vid.content_type === "application/x-mpegURL",
+	);
+	return hlsVariant;
 };
 
 export const formatNumber = (n: number): string => {

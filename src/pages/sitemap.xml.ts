@@ -12,7 +12,7 @@ export const GET = async () => {
 		const filtered = HIDE_UNDERSCORE_SLUGS_IN_LISTS
 			? entries.filter((entry) => !entry.Slug.startsWith("_"))
 			: entries;
-		return filtered.filter((entry) => !entry.IsExternal);
+		return filtered.filter((entry) => !entry.IsExternal || !!entry.ExternalContent);
 	};
 
 	const filteredPosts = filterEntries(posts);

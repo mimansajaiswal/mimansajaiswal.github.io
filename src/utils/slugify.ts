@@ -1971,7 +1971,7 @@ export function slugify(string, replacements = defaultReplacements, separator = 
 			.replace(/'/g, "")
 			.replace(/#+([a-zA-Z0-9_]+)/gi, "hashtag $&")
 			.replace(/#([0-9]\d*)/g, "number $&")
-			.replace("hashtag number", "number")
+			.replace(/hashtag number/g, "number")
 			.replace(/--+/g, " ")
 			.replace(/[^\p{L}\p{N}_\s-]/gu, " ")
 			.replace(/\s+/g, separator)

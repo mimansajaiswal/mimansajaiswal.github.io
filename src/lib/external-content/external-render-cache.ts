@@ -94,7 +94,9 @@ export function loadExternalRenderCache(
 	if (!fs.existsSync(paths.meta) || !fs.existsSync(paths.html)) return null;
 	try {
 		const meta = JSON.parse(fs.readFileSync(paths.meta, "utf-8")) as RenderCacheMeta;
-		if (expectedVersion && meta.version !== expectedVersion) return null;
+		// Only skip version comparison when caller intentionally passes undefined.
+		// A null expectedVersion means "no version known" and should invalidate cache.
+		if (expectedVersion !== undefined && meta.version !== expectedVersion) return null;
 		const html = fs.readFileSync(paths.html, "utf-8");
 		return { html, meta };
 	} catch {

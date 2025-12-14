@@ -513,7 +513,7 @@ function extractCitationsFromRichTextArray(
 		}
 
 		// Format citation
-		const formatted = formatCitation(entry);
+		const formatted = formatCitation(entry, BIBLIOGRAPHY_STYLE as "apa" | "simplified-ieee");
 
 		// Create Citation object
 		const citation: Citation = {
