@@ -61,13 +61,21 @@ const altText =
 
 const isFirstImage = getFirstImage() && setId;
 
-// Only use responsive widths if original is larger than 650px
+// Generate a mobile-friendly width (~1200px) plus the original; avoid upscaling smaller files.
+const mobileWidth =
+	downloadedImage && downloadedImage.width > 1200 ? 1200 : downloadedImage?.width;
 const imageWidths =
-	downloadedImage && downloadedImage.width > 650 ? [650, downloadedImage.width] : undefined;
+	downloadedImage && downloadedImage.width > 1200
+		? [mobileWidth, downloadedImage.width]
+		: downloadedImage
+			? [downloadedImage.width]
+			: undefined;
 const imageSizes =
-	downloadedImage && downloadedImage.width > 650
-		? `(max-width: 640px) 650px, ${downloadedImage.width}px`
-		: undefined;
+	downloadedImage && downloadedImage.width > 1200
+		? `(max-width: 640px) 100vw, ${downloadedImage.width}px`
+		: downloadedImage
+			? `${downloadedImage.width}px`
+			: undefined;
 ---
 
 {
