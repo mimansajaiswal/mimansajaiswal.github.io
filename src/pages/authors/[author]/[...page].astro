@@ -1,0 +1,179 @@
+---
+import type { Page, GetStaticPaths } from "astro";
+import PageLayout from "@/layouts/Base.astro";
+import PostPreview from "@/components/listing-layout/PostPreview.astro";
+import PostCardGallery from "@/components/listing-layout/PostCardGallery.astro";
+import Pagination from "@/components/listing-layout/Paginator.astro";
+import { getAllPosts, getAllAuthorsWithCounts, shouldShowAuthors } from "@/lib/notion/client";
+import type { Post } from "@/lib/interfaces";
+import { slugify } from "@/utils";
+import {
+	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
+	NUMBER_OF_POSTS_PER_PAGE,
+	AUTHORS_CONFIG,
+	LISTING_VIEW,
+} from "@/constants";
+import { getNavLink } from "@/lib/blog-helpers";
+import { getNotionColorToTailwindColor } from "@/utils/style-helpers";
+import Icon from "@/components/ui/Icon.astro";
+import { siteInfo } from "@/site.config";
+
+export const getStaticPaths = (async ({ paginate }) => {
+	// Check if we should show authors
+	const showAuthors = await shouldShowAuthors();
+	if (!showAuthors || !AUTHORS_CONFIG.enableAuthorPages) {
+		return [];
+	}
+
+	let posts = await getAllPosts();
+	if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
+		posts = posts.filter((post) => !post.Slug.startsWith("_"));
+	}
+
+	const authors = await getAllAuthorsWithCounts();
+
+	return authors.flatMap((author) => {
+		// Filter posts by this author
+		let authorPosts = posts.filter(
+			(post) =>
+				post.Authors !== undefined &&
+				post.Authors.some((postAuthor) => postAuthor.name === author.name),
+		);
+
+		// Skip authors with no posts
+		if (authorPosts.length === 0) {
+			return [];
+		}
+
+		// Sort posts to have pinned ones on top
+		authorPosts.sort((a, b) => {
+			if (a.Pinned === b.Pinned) {
+				return 0;
+			}
+			return a.Pinned ? -1 : 1;
+		});
+
+		return paginate(authorPosts, {
+			params: { author: slugify(author.name) },
+			props: {
+				authorName: author.name,
+				description: author.description,
+				color: author.color,
+				count: author.count,
+				url: author.url,
+				photo: author.photo,
+				bio: author.bio,
+			},
+			pageSize: NUMBER_OF_POSTS_PER_PAGE,
+		});
+	});
+}) satisfies GetStaticPaths;
+
+interface Props {
+	page: Page<Post>;
+	authorName: string;
+	description: string;
+	color: string;
+	count: number;
+	url?: string;
+	photo?: string;
+	bio?: string;
+}
+
+const { page, authorName, description, color, count, url, photo, bio } = Astro.props as Props;
+
+// Use default photo/URL ONLY if author name matches the site's author
+const isSiteAuthor = authorName === siteInfo.author;
+const authorPhoto = photo || (isSiteAuthor ? AUTHORS_CONFIG.siteAuthorPhoto : undefined);
+const authorUrl = url || (isSiteAuthor ? AUTHORS_CONFIG.siteAuthorUrl : undefined);
+
+const meta = {
+	title: `Author: ${authorName}`,
+	description: bio || `View all posts by ${authorName}`,
+	ogImage: "/og-image/authorpage---" + slugify(authorName) + ".png",
+};
+
+const paginationProps = {
+	...(page.url.prev && {
+		prevUrl: {
+			url: getNavLink(page.url.prev),
+			text: "Previous",
+		},
+	}),
+	...(page.url.next && {
+		nextUrl: {
+			url: getNavLink(page.url.next),
+			text: "Next",
+		},
+	}),
+};
+---
+
+<PageLayout meta={meta}>
+	<div class="mb-6 flex items-start gap-4">
+		{
+			authorPhoto && (
+				<img
+					src={authorPhoto}
+					alt={`${authorName}'s avatar`}
+					class="h-20 w-20 flex-shrink-0 rounded-full object-cover"
+					loading="lazy"
+				/>
+			)
+		}
+		<div class="flex-1">
+			<h1 class="title mb-0 flex max-w-full items-center">
+				<span
+					class={`flex items-center gap-2 rounded-lg px-2 py-1 ${getNotionColorToTailwindColor(color + "-background", true)} `}
+				>
+					{
+						!authorPhoto && (
+							<Icon class="inline h-6 w-6" name={"author"} aria-hidden="true" focusable="false" />
+						)
+					}
+					{authorName}
+					<span class="count-badge text-base">
+						{count}
+					</span>
+				</span>
+			</h1>
+			{bio && <q class="mt-3 block italic">{bio}</q>}
+			{
+				authorUrl && (
+					<div class="mt-3">
+						<a
+							href={authorUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="text-link decoration-accent-2/40 hover:decoration-accent-2/80 inline-flex items-center gap-1.5 text-base font-medium underline decoration-solid decoration-from-font underline-offset-2 transition-all hover:font-semibold"
+						>
+							<span>Visit {authorName}'s website</span>
+							<Icon class="h-4 w-4" name={"external-link"} aria-hidden="true" focusable="false" />
+						</a>
+					</div>
+				)
+			}
+		</div>
+	</div>
+
+	<section aria-label="Blog post list">
+		{
+			LISTING_VIEW === "gallery" ? (
+				<div class="gallery-grid">
+					{page.data.map((p) => (
+						<PostCardGallery post={p} as="h2" />
+					))}
+				</div>
+			) : (
+				<ul class="space-y-4">
+					{page.data.map((p) => (
+						<li class="flex max-w-full flex-col flex-wrap gap-1.5 [&_q]:basis-full">
+							<PostPreview post={p} as="h2" withDesc />
+						</li>
+					))}
+				</ul>
+			)
+		}
+		<Pagination {...paginationProps} />
+	</section>
+</PageLayout>

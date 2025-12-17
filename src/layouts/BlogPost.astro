@@ -55,10 +55,25 @@ if (
 
 const socialImage = ogImage ? ogImage : `/og-image/${post.Slug}.png`;
 const articleDate = new Date(post.Date).toISOString();
+
+// Get author string for meta tag (falls back to siteInfo.author in BaseHead if undefined)
+const getMetaAuthor = (): string | undefined => {
+	if (post.Authors && post.Authors.length > 0) {
+		return post.Authors.map((a) => a.name).join(", ");
+	}
+	return undefined;
+};
+const metaAuthor = getMetaAuthor();
 ---
 
 <BaseLayout
-	meta={{ title: post.Title, description: post.Excerpt, articleDate, ogImage: socialImage }}
+	meta={{
+		title: post.Title,
+		description: post.Excerpt,
+		articleDate,
+		ogImage: socialImage,
+		author: metaAuthor,
+	}}
 >
 	<div class="max-w-[708px] sm:mr-20 print:mr-auto print:max-w-full">
 		<article class="break-words" data-pagefind-body>

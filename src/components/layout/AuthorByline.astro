@@ -1,0 +1,103 @@
+---
+import type { AuthorProperty } from "@/lib/interfaces";
+import { getNavLink } from "@/lib/blog-helpers";
+import { slugify } from "@/utils";
+import Icon from "@/components/ui/Icon.astro";
+import { AUTHORS_CONFIG } from "@/constants";
+import { shouldShowAuthors } from "@/lib/notion/client";
+import { siteInfo } from "@/siteInfo";
+
+interface Props {
+	authors?: AuthorProperty[];
+	compact?: boolean;
+	class?: string;
+}
+
+const { authors, compact = false, class: className = "" } = Astro.props;
+
+// Check if we should show authors at all
+const showAuthors = await shouldShowAuthors();
+
+// Get effective authors (apply default site author if empty)
+let effectiveAuthors: AuthorProperty[] = [];
+if (authors !== undefined) {
+	if (authors.length > 0) {
+		effectiveAuthors = authors;
+	} else if (siteInfo.author) {
+		// Use site author when property exists but is empty
+		effectiveAuthors = [
+			{
+				id: "default",
+				name: siteInfo.author,
+				color: "default",
+				description: "",
+				url: AUTHORS_CONFIG.siteAuthorUrl || undefined,
+				photo: AUTHORS_CONFIG.siteAuthorPhoto || undefined,
+			},
+		];
+	}
+}
+
+// Don't render if no authors or shouldn't show
+const shouldRender = showAuthors && effectiveAuthors.length > 0;
+
+// Helper to determine author link behavior:
+// - Name always links to author page (if enabled)
+// - Icon only shows if author has external URL, links to that URL
+// Default URL only applies if author name matches site's author
+const getAuthorLinkInfo = (author: AuthorProperty) => {
+	const authorSlug = slugify(author.name);
+	const authorPageUrl = getNavLink(`/authors/${authorSlug}/`);
+	const isSiteAuthor = author.name === siteInfo.author;
+	const effectiveUrl = author.url || (isSiteAuthor ? AUTHORS_CONFIG.siteAuthorUrl : undefined);
+	const hasAuthorPages = AUTHORS_CONFIG.enableAuthorPages;
+
+	return {
+		// Name links to author page (if enabled)
+		nameLink: hasAuthorPages ? authorPageUrl : null,
+		// Icon only shows if there's an external URL
+		showExternalIcon: !!effectiveUrl,
+		externalUrl: effectiveUrl,
+	};
+};
+---
+
+{
+	shouldRender && (
+		<div class:list={["flex flex-wrap items-center gap-1", className]}>
+			<span class={compact ? "text-xs" : "text-sm"}>By</span>
+			{effectiveAuthors.map((author, index) => {
+				const linkInfo = getAuthorLinkInfo(author);
+
+				return (
+					<span class="inline-flex items-center gap-1">
+						{linkInfo.showExternalIcon && (
+							<a
+								href={linkInfo.externalUrl}
+								class="author-icon-link"
+								title={`Visit ${author.name}'s website`}
+								aria-label={`Visit ${author.name}'s website`}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<Icon class={compact ? "h-3 w-3" : "h-4 w-4"} name="author" />
+							</a>
+						)}
+						{linkInfo.nameLink ? (
+							<a
+								href={linkInfo.nameLink}
+								class:list={["author-name-link", compact ? "text-xs" : "text-sm"]}
+								title={`View posts by ${author.name}`}
+							>
+								{author.name}
+							</a>
+						) : (
+							<span class={compact ? "text-xs" : "text-sm"}>{author.name}</span>
+						)}
+						{index < effectiveAuthors.length - 1 && <span>,</span>}
+					</span>
+				);
+			})}
+		</div>
+	)
+}

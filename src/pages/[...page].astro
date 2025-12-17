@@ -22,8 +22,10 @@ import {
 	CITATIONS,
 	BIBTEX_CITATIONS_ENABLED,
 	MARKDOWN_EXPORT_ENABLED,
+	LISTING_VIEW,
 } from "@/constants";
 import PostPreview from "@/components/listing-layout/PostPreview.astro";
+import PostCardGallery from "@/components/listing-layout/PostCardGallery.astro";
 import Icon from "@/components/ui/Icon.astro";
 import { buildHeadings } from "@/utils";
 import TOC from "@/components/auto-added-sections/TOC.astro";
@@ -213,13 +215,21 @@ if (pageFound && page.Slug === HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE) {
 							<strong class="font-semibold">Recent Posts</strong>
 						</h2>
 						<section aria-label="Recent posts list">
-							<ul>
-								{recent_posts.map((post) => (
-									<li>
-										<PostPreview post={post} as="h3" withDesc />
-									</li>
-								))}
-							</ul>
+							{LISTING_VIEW === "gallery" ? (
+								<div class="gallery-grid">
+									{recent_posts.map((post) => (
+										<PostCardGallery post={post} as="h3" />
+									))}
+								</div>
+							) : (
+								<ul>
+									{recent_posts.map((post) => (
+										<li>
+											<PostPreview post={post} as="h3" withDesc />
+										</li>
+									))}
+								</ul>
+							)}
 							<span class="mt-4 block sm:text-end">
 								<a
 									class="sm:hover:text-accent inline-flex items-center gap-1"

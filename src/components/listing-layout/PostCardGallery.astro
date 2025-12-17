@@ -1,0 +1,190 @@
+---
+import type { HTMLTag } from "astro/types";
+import { Image } from "astro:assets";
+import FormattedDate from "@/components/ui/FormattedDate.astro";
+import type { Post } from "@/lib/interfaces";
+import {
+	getNavLink,
+	getNotionImage,
+	filePath,
+	resolvePostHref,
+	isExternalPost,
+} from "@/lib/blog-helpers";
+import { getNotionColorToTailwindColor } from "@/utils/style-helpers";
+import { OPTIMIZE_IMAGES } from "@/constants";
+import Icon from "@/components/ui/Icon.astro";
+import { slugify } from "@/utils";
+
+interface Props {
+	post: Post;
+	as?: HTMLTag;
+	withDesc?: boolean;
+}
+
+const { post, as: Tag = "h3", withDesc = true } = Astro.props;
+const postLink = resolvePostHref(post);
+const external = isExternalPost(post);
+
+// Get FeaturedImage - try optimized version first, fallback to public URL
+const hasFeaturedImage = post.FeaturedImage && post.FeaturedImage.Url;
+let featuredImageMetadata: ImageMetadata | null = null;
+let featuredImageUrl = "";
+
+if (hasFeaturedImage && post.FeaturedImage) {
+	try {
+		const imgUrl = new URL(post.FeaturedImage.Url);
+		// Try to get optimized version from src/assets/notion
+		featuredImageMetadata = await getNotionImage(imgUrl);
+		if (!featuredImageMetadata) {
+			// Fallback to public/notion URL
+			featuredImageUrl = filePath(imgUrl);
+		}
+	} catch {
+		// External URL - use directly
+		featuredImageUrl = post.FeaturedImage.Url;
+	}
+}
+
+// Generate initials for placeholder
+const getInitials = (title: string): string => {
+	return title
+		.split(/\s+/)
+		.slice(0, 2)
+		.map((word) => word.charAt(0).toUpperCase())
+		.join("");
+};
+
+const initials = getInitials(post.Title);
+
+// Check if authors should be linked
+const hasAuthors = post.Authors !== undefined && post.Authors.length > 0;
+---
+
+<article class="post-card group">
+	{/* Main clickable card link */}
+	<a
+		href={postLink}
+		class="post-card-link"
+		target={external ? "_blank" : undefined}
+		rel={external ? "nofollow noopener" : undefined}
+		data-astro-prefetch={!external ? "" : undefined}
+		aria-label={`Read: ${post.Title}`}
+	>
+		{/* Image Container - 3:2 aspect ratio */}
+		<div class="post-card-image-container">
+			{
+				featuredImageMetadata ? (
+					<Image
+						src={featuredImageMetadata}
+						alt={post.Title}
+						class="post-card-image"
+						loading="lazy"
+						decoding="async"
+						widths={[400, 600]}
+						sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+						quality={OPTIMIZE_IMAGES ? 80 : undefined}
+					/>
+				) : featuredImageUrl ? (
+					<img
+						src={featuredImageUrl}
+						alt={post.Title}
+						class="post-card-image"
+						loading="lazy"
+						decoding="async"
+					/>
+				) : (
+					/* Placeholder with initials */
+					<div class="post-card-placeholder">
+						<span>{initials}</span>
+					</div>
+				)
+			}
+			{/* External badge */}
+			{
+				external && (
+					<div class="bg-quote/90 absolute top-2 right-2 flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold text-white">
+						<Icon name={"external-link"} class="h-3 w-3" aria-hidden="true" />
+						Ext
+					</div>
+				)
+			}
+			{/* Pinned badge */}
+			{
+				post.Pinned && (
+					<div class="absolute top-2 left-2">
+						<Icon
+							class="h-5 w-5"
+							name={"pin"}
+							aria-label="Pinned Post"
+							focusable="false"
+							fill="#D50B0D"
+						/>
+					</div>
+				)
+			}
+		</div>
+
+		{/* Card Content */}
+		<div class="p-2">
+			{/* Date */}
+			<FormattedDate date={new Date(post.Date)} class="text-accent/80 mb-1 block text-xs" />
+
+			{/* Title */}
+			<Tag class="mb-1 text-sm leading-snug font-semibold">
+				<span class="line-clamp-2">{post.Title}</span>
+			</Tag>
+
+			{/* Excerpt - shorter for cards */}
+			{
+				withDesc && post.Excerpt && (
+					<q class="text-textColor/70 line-clamp-2 block text-xs italic">{post.Excerpt}</q>
+				)
+			}
+		</div>
+	</a>
+
+	{/* Authors - outside main link to allow separate navigation */}
+	{
+		hasAuthors && (
+			<div class="post-card-authors">
+				{post.Authors!.map((author, i) => (
+					<>
+						<a
+							class="text-textColor/60 hover:text-accent text-[10px] transition-colors"
+							aria-label={`View posts by ${author.name}`}
+							href={getNavLink("/authors/" + slugify(author.name) + "/")}
+						>
+							{author.name}
+						</a>
+						{i < post.Authors!.length - 1 && <span class="text-textColor/40 text-[10px]">, </span>}
+					</>
+				))}
+			</div>
+		)
+	}
+
+	{/* Tags - outside main link to allow separate navigation */}
+	{
+		post.Tags && post.Tags.length > 0 && (
+			<div class="post-card-tags">
+				{post.Tags.slice(0, 3).map((tag, i) => (
+					<>
+						<a
+							class={`inline-block rounded-md px-1 text-sm ${getNotionColorToTailwindColor(
+								tag.color + "-background",
+								true,
+							)}`}
+							aria-label={`View more blogs with the tag ${tag.name}`}
+							href={getNavLink("/tags/" + slugify(tag.name) + "/")}
+						>
+							{tag.name}
+						</a>{" "}
+					</>
+				))}
+				{post.Tags.length > 3 && (
+					<span class="text-textColor/50 text-[10px]">+{post.Tags.length - 3}</span>
+				)}
+			</div>
+		)
+	}
+</article>

@@ -11,13 +11,25 @@ interface Props {
 	meta: SiteMeta;
 }
 const {
-	meta: { title = siteInfo.title, description = siteInfo.description, ogImage, articleDate },
+	meta: {
+		title = siteInfo.title,
+		description = siteInfo.description,
+		ogImage,
+		articleDate,
+		author,
+	},
 } = Astro.props;
 ---
 
 <html lang={siteInfo.lang}>
 	<head>
-		<BaseHead title={title} description={description} ogImage={ogImage} articleDate={articleDate} />
+		<BaseHead
+			title={title}
+			description={description}
+			ogImage={ogImage}
+			articleDate={articleDate}
+			author={author}
+		/>
 	</head>
 	<body class="max-w-3xl print:max-w-full">
 		<SkipLink />

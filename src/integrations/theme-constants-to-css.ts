@@ -9,169 +9,169 @@ const theme_config = key_value_from_json["theme"];
 
 // Helper function that normalizes a color string to hex format
 function normalizeColor(value: string): string {
-  // If it's already a hex color (3 or 6 digits), return it directly.
-  if (/^#([0-9A-F]{3}){1,2}$/i.test(value)) {
-    return value;
-  }
-  // Otherwise assume it's a space-separated RGB string
-  const parts = value.trim().split(/\s+/).map(Number);
-  if (parts.length >= 3) {
-    const toHex = (num: number): string => {
-      const hex = num.toString(16);
-      return hex.length === 1 ? "0" + hex : hex;
-    };
-    return `#${toHex(parts[0])}${toHex(parts[1])}${toHex(parts[2])}`;
-  }
-  // If the format is unexpected, return the original value as a fallback
-  return value;
+	// If it's already a hex color (3 or 6 digits), return it directly.
+	if (/^#([0-9A-F]{3}){1,2}$/i.test(value)) {
+		return value;
+	}
+	// Otherwise assume it's a space-separated RGB string
+	const parts = value.trim().split(/\s+/).map(Number);
+	if (parts.length >= 3) {
+		const toHex = (num: number): string => {
+			const hex = num.toString(16);
+			return hex.length === 1 ? "0" + hex : hex;
+		};
+		return `#${toHex(parts[0])}${toHex(parts[1])}${toHex(parts[2])}`;
+	}
+	// If the format is unexpected, return the original value as a fallback
+	return value;
 }
 
 export default (): AstroIntegration => ({
-  name: "theme-constants-to-css",
-  hooks: {
-    "astro:build:start": async () => {
-      // Use CSS variables that will be populated by Astro's Font API
-      // If Font API isn't configured, fall back to system fonts
-      const fontSans = "var(--font-sans, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif)";
-      const fontSerif = "var(--font-serif, ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif)";
-      const fontMono = "var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace)";
+	name: "theme-constants-to-css",
+	hooks: {
+		"astro:build:start": async () => {
+			// Use CSS variables that will be populated by Astro's Font API
+			// If Font API isn't configured, fall back to system fonts
+			const fontSans = "var(--font-sans, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif)";
+			const fontSerif = "var(--font-serif, ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif)";
+			const fontMono = "var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace)";
 
-      const isMarkdownEnabled = key_value_from_json["block-rendering"]?.["process-content-to-markdown"] === true;
-      const tocContainerBottom = isMarkdownEnabled ? "bottom-52" : "bottom-40";
-      const bottomTocButtonBottom = isMarkdownEnabled ? "bottom-20" : "bottom-8";
-      const toTopBtnBottom = isMarkdownEnabled ? "bottom-32" : "bottom-20";
-      const copyBtnPosition = isMarkdownEnabled ? "end-4 bottom-8" : "start-4 bottom-8";
+			const isMarkdownEnabled = key_value_from_json["block-rendering"]?.["process-content-to-markdown"] === true;
+			const tocContainerBottom = isMarkdownEnabled ? "bottom-52" : "bottom-40";
+			const bottomTocButtonBottom = isMarkdownEnabled ? "bottom-20" : "bottom-8";
+			const toTopBtnBottom = isMarkdownEnabled ? "bottom-32" : "bottom-20";
+			const copyBtnPosition = isMarkdownEnabled ? "end-4 bottom-8" : "start-4 bottom-8";
 
-      const customColors = {
-        ngray: {
-          "txt-light": "#787774",
-          "txt-dark": "#9B9B9B",
-          "bg-light": "#F1F1EF",
-          "bg-dark": "#2F2F2F",
-          "bg-tag-light": "#E3E2E0",
-          "bg-tag-dark": "#5A5A5A",
-          "table-header-bg-light": "#F7F6F3",
-          "table-header-bg-dark": "#FFFFFF",
-          "callout-border-light": "#DFDFDE",
-          "callout-border-dark": "#373737",
-        },
-        nlgray: {
-          "bg-tag-light": "#F1F1F0",
-          "bg-tag-dark": "#373737",
-        },
-        nbrown: {
-          "txt-light": "#9F6B53",
-          "txt-dark": "#BA856F",
-          "bg-light": "#F4EEEE",
-          "bg-dark": "#4A3228",
-          "bg-tag-light": "#EEE0DA",
-          "bg-tag-dark": "#603B2C",
-        },
-        norange: {
-          "txt-light": "#D9730D",
-          "txt-dark": "#C77D48",
-          "bg-light": "#FBECDD",
-          "bg-dark": "#5C3B23",
-          "bg-tag-light": "#FADEC9",
-          "bg-tag-dark": "#854C1D",
-        },
-        nyellow: {
-          "txt-light": "#CB912F",
-          "txt-dark": "#CA9849",
-          "bg-light": "#FBEDD6",
-          "bg-dark": "#56452F",
-          "bg-tag-light": "#F9E4BC",
-          "bg-tag-dark": "#835E33",
-        },
-        ngreen: {
-          "txt-light": "#448361",
-          "txt-dark": "#529E72",
-          "bg-light": "#EDF3EC",
-          "bg-dark": "#243D30",
-          "bg-tag-light": "#DBEDDB",
-          "bg-tag-dark": "#2B593F",
-        },
-        nblue: {
-          "txt-light": "#337EA9",
-          "txt-dark": "#5E87C9",
-          "bg-light": "#E7F3F8",
-          "bg-dark": "#143A4E",
-          "bg-tag-light": "#D3E5EF",
-          "bg-tag-dark": "#28456C",
-        },
-        npurple: {
-          "txt-light": "#9065B0",
-          "txt-dark": "#9D68D3",
-          "bg-light": "#F7F3F8",
-          "bg-dark": "#3C2D49",
-          "bg-tag-light": "#E8DEEE",
-          "bg-tag-dark": "#492F64",
-        },
-        npink: {
-          "txt-light": "#C14C8A",
-          "txt-dark": "#9D68D3",
-          "bg-light": "#FBF2F5",
-          "bg-dark": "#4E2C3C",
-          "bg-tag-light": "#F5E0E9",
-          "bg-tag-dark": "#69314C",
-        },
-        nred: {
-          "txt-light": "#D44C47",
-          "txt-dark": "#DF5452",
-          "bg-light": "#FDEBEC",
-          "bg-dark": "#522E2A",
-          "bg-tag-light": "#FFE2DD",
-          "bg-tag-dark": "#6E3630",
-        },
-      };
+			const customColors = {
+				ngray: {
+					"txt-light": "#787774",
+					"txt-dark": "#9B9B9B",
+					"bg-light": "#F1F1EF",
+					"bg-dark": "#2F2F2F",
+					"bg-tag-light": "#E3E2E0",
+					"bg-tag-dark": "#5A5A5A",
+					"table-header-bg-light": "#F7F6F3",
+					"table-header-bg-dark": "#FFFFFF",
+					"callout-border-light": "#DFDFDE",
+					"callout-border-dark": "#373737",
+				},
+				nlgray: {
+					"bg-tag-light": "#F1F1F0",
+					"bg-tag-dark": "#373737",
+				},
+				nbrown: {
+					"txt-light": "#9F6B53",
+					"txt-dark": "#BA856F",
+					"bg-light": "#F4EEEE",
+					"bg-dark": "#4A3228",
+					"bg-tag-light": "#EEE0DA",
+					"bg-tag-dark": "#603B2C",
+				},
+				norange: {
+					"txt-light": "#D9730D",
+					"txt-dark": "#C77D48",
+					"bg-light": "#FBECDD",
+					"bg-dark": "#5C3B23",
+					"bg-tag-light": "#FADEC9",
+					"bg-tag-dark": "#854C1D",
+				},
+				nyellow: {
+					"txt-light": "#CB912F",
+					"txt-dark": "#CA9849",
+					"bg-light": "#FBEDD6",
+					"bg-dark": "#56452F",
+					"bg-tag-light": "#F9E4BC",
+					"bg-tag-dark": "#835E33",
+				},
+				ngreen: {
+					"txt-light": "#448361",
+					"txt-dark": "#529E72",
+					"bg-light": "#EDF3EC",
+					"bg-dark": "#243D30",
+					"bg-tag-light": "#DBEDDB",
+					"bg-tag-dark": "#2B593F",
+				},
+				nblue: {
+					"txt-light": "#337EA9",
+					"txt-dark": "#5E87C9",
+					"bg-light": "#E7F3F8",
+					"bg-dark": "#143A4E",
+					"bg-tag-light": "#D3E5EF",
+					"bg-tag-dark": "#28456C",
+				},
+				npurple: {
+					"txt-light": "#9065B0",
+					"txt-dark": "#9D68D3",
+					"bg-light": "#F7F3F8",
+					"bg-dark": "#3C2D49",
+					"bg-tag-light": "#E8DEEE",
+					"bg-tag-dark": "#492F64",
+				},
+				npink: {
+					"txt-light": "#C14C8A",
+					"txt-dark": "#9D68D3",
+					"bg-light": "#FBF2F5",
+					"bg-dark": "#4E2C3C",
+					"bg-tag-light": "#F5E0E9",
+					"bg-tag-dark": "#69314C",
+				},
+				nred: {
+					"txt-light": "#D44C47",
+					"txt-dark": "#DF5452",
+					"bg-light": "#FDEBEC",
+					"bg-dark": "#522E2A",
+					"bg-tag-light": "#FFE2DD",
+					"bg-tag-dark": "#6E3630",
+				},
+			};
 
-      let colorDefinitions = "";
-      for (const [group, shades] of Object.entries(customColors)) {
-        for (const [shade, value] of Object.entries(shades)) {
-          colorDefinitions += `  --color-${group}-${shade}: ${value};\n`;
-        }
-      }
+			let colorDefinitions = "";
+			for (const [group, shades] of Object.entries(customColors)) {
+				for (const [shade, value] of Object.entries(shades)) {
+					colorDefinitions += `  --color-${group}-${shade}: ${value};\n`;
+				}
+			}
 
-      const createCssVariables = (theme) => {
-        let cssContent = "";
-        let bgHex = "#ffffff";
+			const createCssVariables = (theme) => {
+				let cssContent = "";
+				let bgHex = "#ffffff";
 
-        for (const key in theme_config.colors) {
-          let color = theme_config.colors[key][theme];
-          let cssValue;
-          // If no color is defined, use defaults in hex format
-          if (!color) {
-            cssValue = key.includes("bg")
-              ? theme === "light" ? "#ffffff" : "#000000"
-              : theme === "light" ? "#000000" : "#ffffff";
-          } else {
-            // Normalize the provided color value to hex
-            cssValue = normalizeColor(color);
-          }
+				for (const key in theme_config.colors) {
+					let color = theme_config.colors[key][theme];
+					let cssValue;
+					// If no color is defined, use defaults in hex format
+					if (!color) {
+						cssValue = key.includes("bg")
+							? theme === "light" ? "#ffffff" : "#000000"
+							: theme === "light" ? "#000000" : "#ffffff";
+					} else {
+						// Normalize the provided color value to hex
+						cssValue = normalizeColor(color);
+					}
 
-          if (key === "bg") bgHex = cssValue;
+					if (key === "bg") bgHex = cssValue;
 
-          cssContent += `    --theme-${key}: ${cssValue};\n`;
-        }
+					cssContent += `    --theme-${key}: ${cssValue};\n`;
+				}
 
-      // Compute popover-bg based on bg color
-      const refHex =
-          parseInt(bgHex.slice(5, 7), 16) > parseInt(bgHex.slice(1, 3), 16)
-          ? theme === "light" ? "#D2E7F7" : "#acd5e7" // cool
-          : theme === "light" ? "#FBE4CE" : "#F3C699"; // warm
+				// Compute popover-bg based on bg color
+				const refHex =
+					parseInt(bgHex.slice(5, 7), 16) > parseInt(bgHex.slice(1, 3), 16)
+						? theme === "light" ? "#D2E7F7" : "#acd5e7" // cool
+						: theme === "light" ? "#FBE4CE" : "#F3C699"; // warm
 
-      const mix = (v1: string, v2: string) =>
-        Math.round(0.9 * parseInt(v1, 16) + 0.1 * parseInt(v2, 16))
-          .toString(16)
-          .padStart(2, "0");
+				const mix = (v1: string, v2: string) =>
+					Math.round(0.9 * parseInt(v1, 16) + 0.1 * parseInt(v2, 16))
+						.toString(16)
+						.padStart(2, "0");
 
-      const popoverHex = `#${mix(bgHex.slice(1, 3), refHex.slice(1, 3))}${mix(bgHex.slice(3, 5), refHex.slice(3, 5))}${mix(bgHex.slice(5, 7), refHex.slice(5, 7))}`;
-      cssContent += `    --theme-popover-bg: ${popoverHex};`;
+				const popoverHex = `#${mix(bgHex.slice(1, 3), refHex.slice(1, 3))}${mix(bgHex.slice(3, 5), refHex.slice(3, 5))}${mix(bgHex.slice(5, 7), refHex.slice(5, 7))}`;
+				cssContent += `    --theme-popover-bg: ${popoverHex};`;
 
-        return cssContent;
-      };
+				return cssContent;
+			};
 
-      const cssContent = `@import "tailwindcss";
+			const cssContent = `@import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -488,7 +488,7 @@ ${createCssVariables("dark")}
   }
 
   details.toggle[open] .toggle-icon-box > .rotate-svg {
-    transform: rotate(90deg);
+    @apply rotate-90;
   }
 
   /* ToDo */
@@ -524,6 +524,11 @@ ${createCssVariables("dark")}
   /* Tags */
   .notion-tag {
     @apply inline-block rounded-md px-1 text-sm;
+  }
+
+  /* Count Badge (for tags and authors) */
+  .count-badge {
+    @apply ml-2 rounded-sm bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300;
   }
 
   /* Image */
@@ -595,11 +600,7 @@ ${createCssVariables("dark")}
 
   @variant sm {
     .copy-floating-btn {
-      @apply h-auto w-auto;
-      bottom: auto;
-      inset-inline-start: auto;
-      top: 7.5rem;
-      inset-inline-end: 1rem;
+      @apply h-auto w-auto bottom-auto left-auto right-4 top-[7.5rem];
     }
   }
 
@@ -629,6 +630,15 @@ ${createCssVariables("dark")}
     @apply text-link decoration-accent-2/40 underline decoration-dashed underline-offset-2;
   }
 
+  /* Author Byline */
+  .author-name-link {
+    @apply text-link underline decoration-wavy decoration-from-font decoration-accent-2/40 hover:decoration-accent-2/80 underline-offset-2 transition-all;
+  }
+
+  .author-icon-link {
+    @apply text-link inline-flex items-center transition-all hover:scale-110 hover:text-accent;
+  }
+
   .annotation-code {
     @apply rounded-sm border-none px-1 font-mono;
   }
@@ -643,8 +653,7 @@ ${createCssVariables("dark")}
 
   /* Recent Posts */
   #auto-recent-posts {
-    @apply mt-8 mb-4 cursor-pointer text-2xl font-normal;
-    position: relative;
+    @apply relative mt-8 mb-4 cursor-pointer text-2xl font-normal;
   }
 
   #auto-recent-posts::before {
@@ -679,8 +688,7 @@ ${createCssVariables("dark")}
   }
 
   .non-toggle-h2 {
-    @apply mb-4 cursor-pointer text-2xl font-normal;
-    position: relative;
+    @apply relative mb-4 cursor-pointer text-2xl font-normal;
   }
 
   .non-toggle-h2::before {
@@ -699,7 +707,7 @@ ${createCssVariables("dark")}
 
   /* Anchor Links (hasId) */
   .hasId {
-    position: relative;
+    @apply relative;
   }
 
   .hasId::before {
@@ -730,7 +738,7 @@ ${createCssVariables("dark")}
   }
 
   details.toggle[open] > summary > div > .rotate-svg {
-    transform: rotate(90deg);
+    @apply rotate-90;
   }
 
   .toggle-heading-1 {
@@ -771,18 +779,18 @@ ${createCssVariables("dark")}
   #-vistocid--autogenerated-interlinked-content,
   #-tocid--autogenerated-cite-this-page,
   #-vistocid--autogenerated-cite-this-page {
-    display: block !important;
+    @apply !block;
   }
 
   #-bottomtocid--autogenerated-footnotes,
   #-bottomtocid--autogenerated-bibliography,
   #-bottomtocid--autogenerated-interlinked-content,
   #-bottomtocid--autogenerated-cite-this-page {
-    display: inline !important;
+    @apply !inline;
   }
 
   .footnote-content {
-    display: inline;
+    @apply inline;
   }
 
   /* CSS counter for IEEE style numbering */
@@ -791,8 +799,7 @@ ${createCssVariables("dark")}
   }
 
   .bibliography-ieee li {
-    display: flex;
-    align-items: baseline;
+    @apply flex items-baseline;
     counter-increment: citation-counter;
   }
 
@@ -903,17 +910,13 @@ ${createCssVariables("dark")}
 
   /* External MDX Content */
   .mdx-notion {
-    max-width: none;
+    @apply max-w-none;
   }
 
   .mdx-notion h1,
   .mdx-notion h2,
   .mdx-notion h3 {
-    font-weight: 700;
-    color: var(--theme-text);
-    letter-spacing: -0.01em;
-    margin-top: 1.25rem;
-    margin-bottom: 0.75rem;
+    @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3;
   }
 
   .mdx-notion h1 {
@@ -932,69 +935,52 @@ ${createCssVariables("dark")}
   }
 
   .mdx-notion p {
-    margin: 0 0 0.9rem 0;
-    color: var(--theme-text);
-    line-height: 1.75;
-    font-size: 1rem;
+    @apply mt-0 ml-0 mb-[0.9rem] text-base leading-[1.75] text-textColor;
   }
 
   .mdx-notion ul,
   .mdx-notion ol {
-    margin: 0.2rem 0 1rem 1.25rem;
-    padding-left: 1.25rem;
-    line-height: 1.65;
-    list-style-position: outside;
+    @apply my-[0.2rem] mb-[1rem] ms-[1.25rem] ps-[1.25rem] leading-[1.65] list-outside;
   }
 
   .mdx-notion ul {
-    list-style-type: disc;
+    @apply list-disc;
   }
 
   .mdx-notion ol {
-    list-style-type: decimal;
+    @apply list-decimal;
   }
 
   .mdx-notion li {
-    margin: 0.1rem 0;
-    padding-left: 0.1rem;
+    @apply my-[0.1rem] ps-[0.1rem];
   }
 
   .mdx-notion blockquote {
-    margin: 1.1rem 0;
-    padding: 0.75rem 1rem;
+    @apply my-[1.1rem] px-4 py-3 rounded-r-lg;
     border-left: 4px solid var(--theme-quote);
     background-color: color-mix(in srgb, var(--theme-quote) 8%, transparent);
-    border-radius: 0 8px 8px 0;
   }
 
   .mdx-notion code {
-    font-family: var(--font-mono);
-    background-color: color-mix(in srgb, var(--theme-accent) 18%, transparent);
-    padding: 0.15rem 0.35rem;
-    border-radius: 4px;
-    font-size: 0.95rem;
+    /* Match Notion inline code styling */
+    @apply font-mono rounded-sm px-1 py-[0.15rem] text-[0.95rem] bg-gray-100 text-rose-800 dark:bg-gray-800 dark:text-rose-300;
   }
 
   .mdx-notion pre {
-    font-family: var(--font-mono);
-    background-color: color-mix(in srgb, var(--theme-accent) 12%, transparent);
-    padding: 1rem;
-    border-radius: 12px;
-    overflow-x: auto;
-    margin: 1.1rem 0;
+    @apply font-mono px-4 py-4 rounded-2xl overflow-x-auto my-[1.1rem];
+  }
+
+  /* Keep block code un-tinted while preserving inline styling */
+  .mdx-notion pre code {
+    @apply bg-transparent p-0 rounded-none;
   }
 
   .mdx-notion a {
-    color: var(--theme-accent);
-    text-decoration: underline;
-    text-decoration-style: wavy;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 3px;
-    transition: color 0.2s ease;
+    @apply text-accent underline decoration-wavy decoration-1 underline-offset-[3px] transition-colors duration-200;
   }
 
   .mdx-notion a:hover {
-    color: var(--theme-accent-2);
+    @apply text-accent-2;
   }
 }
 
@@ -1004,10 +990,8 @@ ${createCssVariables("dark")}
   }
 
   #webtrotion__search .pagefind-ui__search-clear {
+    @apply p-0 bg-transparent overflow-hidden;
     width: calc(60px * var(--pagefind-ui-scale));
-    padding: 0;
-    background-color: transparent;
-    overflow: hidden;
   }
   #webtrotion__search .pagefind-ui__search-clear:focus {
     outline: 1px solid var(--color-accent-2);
@@ -1023,13 +1007,11 @@ ${createCssVariables("dark")}
   }
 
   #webtrotion__search .pagefind-ui__result {
-    padding: 12px;
-    border: 0;
-    overflow-x: hidden;
+    @apply p-3 border-0 overflow-x-hidden;
   }
   @media (max-width: 640px) {
     #webtrotion__search .pagefind-ui__drawer {
-      gap: 12px !important;
+      @apply !gap-3;
     }
   }
 
@@ -1041,14 +1023,12 @@ ${createCssVariables("dark")}
   }
 
   #webtrotion__search .pagefind-ui__result-link:hover {
-    text-decoration: none;
+    @apply no-underline;
     background-image: linear-gradient(transparent, transparent 4px, var(--color-link) 4px, var(--color-link));
   }
 
   #webtrotion__search mark {
-    color: var(--color-quote);
-    background-color: transparent;
-    font-weight: 600;
+    @apply text-quote bg-transparent font-semibold;
   }
 
   #webtrotion__search {
@@ -1060,40 +1040,32 @@ ${createCssVariables("dark")}
   }
 
 @utility transition-height {
-  transition-property: height;
+  @apply transition-[height];
 }
 
 
 
 .popoverEl {
-  left: 0;
-  top: 0;
-  max-width: calc(100vw - 10px);
+  @apply left-0 top-0 max-w-[calc(100vw-10px)];
 }
 
 .footnote-margin-note.highlighted {
-  opacity: 1;
-  color: var(--color-textColor);
+  @apply opacity-100 text-textColor;
 }
 
 [data-margin-note].highlighted {
   background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
-  border-radius: 3px;
-  padding: 0 2px;
-  margin: 0 -2px;
+  @apply rounded px-[2px] -mx-[2px];
   /* This prevents the padding from shifting surrounding text */
 }
 
 .footnote-margin-note> :first-child > :nth-child(2) {
-  display: inline !important;
-  margin-top: 0 !important;
+  @apply !inline !mt-0;
 }
 
 .footnote-margin-note.highlighted > :first-child > :first-child {
   background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
-  border-radius: 3px;
-  padding: 0 2px;
-  margin: 0 -2px;
+  @apply rounded px-[2px] -mx-[2px];
   /* Prevents padding from shifting text */
   color: var(--color-quote);
   /* Keep the quote color for the number */
@@ -1101,17 +1073,17 @@ ${createCssVariables("dark")}
 
 @media (max-width: 1023px) {
   .footnote-margin-note {
-    display: none;
+    @apply hidden;
   }
 }
 
 @media (min-width: 1024px) {
   .footnote-margin-note {
-    display: block;
+    @apply block;
   }
 
   .post-body {
-    position: relative;
+    @apply relative;
   }
 }
 
@@ -1120,83 +1092,49 @@ ${createCssVariables("dark")}
 .post-preview-full-container .bibliography-section,
 .post-preview-full-container .footnotes-section,
 .post-preview-full-container .jump-to-bibliography {
-  display: none !important;
+  @apply !hidden
 }
 
 .datatable-input {
-  padding: 3px 6px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  width: 100%;
-  box-sizing: border-box;
+  @apply w-full box-border rounded-md border border-[#ccc] px-[6px] py-[3px] text-sm transition-all duration-300 ease-in-out;
 }
 
 .datatable-input:focus {
-  border-color: #007bff;
-  outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
+  @apply border-[#007bff] outline-none ring-[0.2rem] ring-[rgba(0,123,255,0.25)];
 }
 
 .filter-toggle {
-  background: none;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 0 10px;
-  transition: all 0.3s ease;
+  @apply bg-none border-none text-[20px] cursor-pointer px-[10px] transition-all duration-300 ease-in-out;
 }
 
 .filter-toggle:hover {
-  opacity: 0.7;
+  @apply opacity-70;
 }
 
 .filter-row,
 .search-inputs {
-  transition: all 0.3s ease;
-  max-height: 50px;
-  opacity: 1;
-  overflow: hidden;
+  @apply transition-all duration-300 ease-in-out max-h-[50px] opacity-100 overflow-hidden;
 }
 
 .filter-row.hide,
 .search-inputs.hide {
-  max-height: 0;
-  display: none;
-  opacity: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  margin-top: 0;
-  margin-bottom: 0;
+  @apply max-h-0 hidden opacity-0 pt-0 pb-0 mt-0 mb-0;
 }
 
 .datatable-top {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  padding: 4px;
-  margin-bottom: 10px;
+  @apply flex flex-wrap justify-between items-center p-1 mb-[10px];
 }
 
 .datatable-top-left {
-  display: flex;
-  align-items: center;
-  flex-grow: 1;
+  @apply flex items-center flex-grow;
 }
 
 .datatable-info {
-  font-size: small;
-  font-family: monospace;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  @apply text-sm font-mono transition-all duration-300 ease-in-out whitespace-nowrap;
 }
 
 .datatable-sorter {
-  background-color: transparent !important;
-  position: relative;
-  padding-right: 1rem;
+  @apply relative pr-4 bg-transparent;
   /* Reserve enough space for the sort icons */
 }
 
@@ -1237,41 +1175,118 @@ html.dark :not(.datatable-ascending):not(.datatable-descending)>.datatable-sorte
 
 @media (max-width: 640px) {
   .datatable-top {
-    flex-wrap: nowrap;
+    @apply flex-nowrap;
   }
 
   .datatable-top-left {
-    width: auto;
-    margin-bottom: 0;
+    @apply w-auto mb-0;
   }
 
   .datatable-info {
-    padding-left: 8px;
+    @apply pl-2;
   }
 
   .datatable-top.filter-active {
-    flex-direction: column;
-    align-items: stretch;
+    @apply flex-col items-stretch;
   }
 
   .datatable-top.filter-active .datatable-top-left {
-    width: 100%;
-    margin-bottom: 8px;
+    @apply w-full mb-2;
   }
 
   .datatable-top.filter-active .datatable-info {
-    width: 100%;
-    padding-right: 8px;
-    text-align: right;
+    @apply w-full pr-2 text-right;
   }
+}
+
+/* Gallery Grid Layout - 1 col sm, 2 cols md, 3 cols lg */
+.gallery-grid {
+  @apply grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3;
+}
+
+/* Post Card for Gallery View */
+.post-card {
+  @apply relative overflow-hidden rounded-lg border bg-bgColor transition-[box-shadow,transform,border-color] duration-200 ease-in-out;
+  border-color: color-mix(in srgb, var(--color-textColor) 10%, transparent);
+}
+
+.post-card:hover {
+  @apply -translate-y-[2px];
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-textColor) 10%, transparent);
+  border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+/* Card link - covers entire card */
+.post-card-link {
+  @apply block no-underline text-inherit;
+}
+
+/* Image container with 3:2 aspect ratio */
+.post-card-image-container {
+  @apply relative overflow-hidden aspect-[3/2];
+}
+
+.post-card-image {
+  @apply h-full w-full object-cover transition-transform duration-300 ease-in-out;
+}
+
+.post-card:hover .post-card-image {
+  @apply scale-105;
+}
+
+.post-card-placeholder {
+  @apply flex h-full w-full items-center justify-center;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-accent) 20%, transparent));
+}
+
+.post-card-placeholder span {
+  @apply text-[2.5rem] font-bold;
+  color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+}
+
+/* Tags section - positioned at bottom, allows separate clicks */
+.post-card-tags {
+  @apply flex flex-wrap items-baseline gap-1 px-3 pb-3;
+}
+
+/* Authors section - positioned above tags, allows separate clicks */
+.post-card-authors {
+  @apply px-3 pb-1;
+}
+
+/* Hero Background (formerly Cover Overlay) for Hero and Stream */
+.cover-hero-container {
+  @apply grid relative w-full overflow-hidden min-h-[150px] rounded-lg mb-4;
+  grid-template-areas: "stack";
+  @apply isolate;
+}
+
+.cover-hero-image {
+  grid-area: stack;
+  @apply absolute inset-0 bg-cover bg-center opacity-40 pointer-events-none;
+}
+
+.cover-hero-tint {
+  grid-area: stack;
+  @apply absolute inset-0 pointer-events-none;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-bgColor) 70%, transparent),
+    color-mix(in srgb, var(--color-bgColor) 50%, transparent)
+  );
+}
+
+.cover-hero-content {
+  grid-area: stack;
+  @apply relative z-10 min-h-[150px] p-6 flex flex-col justify-center;
 }
 
 .glightbox-clean .gslide-description {
   background: var(--color-bgColor);
 }`;
 
-      const cssOutputPath = "src/styles/global.css";
-      fs.writeFileSync(cssOutputPath, cssContent);
-    },
-  },
+			const cssOutputPath = "src/styles/global.css";
+			fs.writeFileSync(cssOutputPath, cssContent);
+		},
+	},
 });

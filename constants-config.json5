@@ -18,6 +18,23 @@
 		"custom-domain": "",
 		// The sub-directory your site is deployed in (e.g., "/blog"). Leave empty if your site is at the root of your domain. Must start with a forward slash "/" if used.
 		"base-path": "",
+		// If the Authors property doesn't exist in your Notion database, all settings from now on below in this key are ignored.
+		// Personal URL for the site's author (from "author" field above). Only applies when an author's name matches the site author.
+		// Leave blank to link to author page (if enabled) or show as plain text.
+		"site-author-url": "",
+		// Avatar/photo URL for the site's author (from "author" field above). Only applies when an author's name matches the site author.
+		// Leave blank for no avatar.
+		"site-author-photo": "",
+		// === Multi-Author Support ===
+		// Configure author handling for posts with a multi-select Authors property in Notion.
+		// When a post's Authors property is empty, the site's author (above) is used as fallback.
+		authors: {
+			// If true, builds /authors/ index and /authors/[author]/ pages. Set to false to disable author pages entirely.
+			"enable-author-pages": true,
+			// If true, only show bylines and build author pages when at least one post has a non-default author.
+			// When all posts use the default author, bylines and author pages are suppressed.
+			"only-when-custom-authors": true,
+		},
 	},
 
 	// === Collections & Post Listings ===
@@ -35,11 +52,17 @@
 		"full-preview-collections": ["Blurbs"],
 		// If true, any post with a slug starting with an underscore (e.g., "_draft-post") will be hidden from all lists (home page, collections, tags), from sitemap and search. The page will still be built and accessible via its direct URL.
 		"hide-underscore-slugs-in-lists": true,
+		// Listing view style for post lists.
+		// "list" (default): Traditional vertical list with title, date, excerpt, and tags.
+		// "gallery": Card-based grid layout with FeaturedImage thumbnails.
+		"listing-view": "list",
 	},
 
 	// === Theme Customization ===
 	// Customize the look and feel of your site, including colors and fonts.
 	theme: {
+		// Currently only the classic theme is supported and available. Changing this changes nothing.
+		preset: "classic",
 		// Define your site's color palette.
 		// Colors MUST be in RGB format, with spaces between numbers (e.g., "255 255 255").
 		colors: {
@@ -84,6 +107,10 @@
 			// No need to escape spaces in font names!
 			"mono-font-name": "Spline Sans Mono",
 		},
+		// Enable using the cover image as the hero background (with an overlay for text readability).
+		// When enabled, displays a low-opacity tinted banner behind the title/date/tags area
+		// using the Cover image (only when a Cover image exists).
+		"cover-as-hero-background": true,
 	},
 
 	// === Social Media Links ===
@@ -217,6 +244,18 @@
 		"mdx-inject": "<!-- mdx inject -->",
 		// In a Notion table's first cell, this marker enables datatable features (sorting, filtering).
 		table: "<<🗂️>>",
+		// Author metadata shortcodes - used in author multi-select description field to specify URL and photo.
+		// Format in description: <<author-url>>https://example.com<<author-url>> <<author-photo-url>>https://example.com/photo.jpg<<author-photo-url>> Remaining text is the bio.
+		"author-desc": {
+			"author-url": {
+				start: "<<author-url>>",
+				end: "<<author-url>>",
+			},
+			"author-photo-url": {
+				start: "<<author-photo-url>>",
+				end: "<<author-photo-url>>",
+			},
+		},
 	},
 
 	// === Auto-Extracted Sections ===

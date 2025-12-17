@@ -5,9 +5,11 @@ import {
 	generateFilePath,
 	getPostContentByPostId,
 	createInterlinkedContentToThisEntry,
+	isImageTypeForAstro,
 } from "../lib/notion/client";
-import { LAST_BUILD_TIME } from "../constants";
+import { COVER_AS_HERO_BACKGROUND_ENABLED, LAST_BUILD_TIME, LISTING_VIEW } from "../constants";
 import fs from "node:fs";
+import path from "path";
 
 export default (): AstroIntegration => ({
 	name: "entry-cache-er",
@@ -19,20 +21,64 @@ export default (): AstroIntegration => ({
 				entries.map(async (entry) => {
 					let tasks = [];
 
-					// Conditionally add the downloadFile task for featured images
-					if (
-						entry.FeaturedImage &&
-						entry.FeaturedImage.Url &&
-						!(
-							LAST_BUILD_TIME &&
-							entry.LastUpdatedTimeStamp < LAST_BUILD_TIME &&
-							!fs.existsSync(generateFilePath(new URL(entry.FeaturedImage.Url)))
-						)
-					) {
+					// Download Cover image for overlay (only to src/assets/notion)
+					if (COVER_AS_HERO_BACKGROUND_ENABLED && entry.Cover && entry.Cover.Url) {
+						try {
+							const url = new URL(entry.Cover.Url);
+							const isImage = isImageTypeForAstro(url.pathname);
+							if (isImage) {
+								const assetsPath = generateFilePath(url, true);
+								const needsAssetsDownload =
+									!LAST_BUILD_TIME ||
+									entry.LastUpdatedTimeStamp > LAST_BUILD_TIME ||
+									!fs.existsSync(assetsPath);
+
+								if (needsAssetsDownload) {
+									tasks.push(downloadFile(url, true));
+								}
+							}
+						} catch (err) {
+							console.log("Invalid Cover URL");
+						}
+					}
+
+					// Download FeaturedImage if it exists
+					if (entry.FeaturedImage && entry.FeaturedImage.Url) {
 						let url;
 						try {
 							url = new URL(entry.FeaturedImage.Url);
-							tasks.push(downloadFile(url, false));
+
+							// Check if we need to download to public/notion (for OG images)
+							const publicPath = (() => {
+								const base = generateFilePath(url, false);
+								const ext = path.extname(base).toLowerCase();
+								if ([".jpg", ".jpeg", ".png"].includes(ext)) return base;
+								// Replicate downloadFile's PNG conversion naming logic
+								const dir = path.dirname(base);
+								const name = path.parse(base).name;
+								return path.join(dir, name + ".png");
+							})();
+							const needsPublicDownload =
+								!LAST_BUILD_TIME ||
+								entry.LastUpdatedTimeStamp > LAST_BUILD_TIME ||
+								!fs.existsSync(publicPath);
+
+							if (needsPublicDownload) {
+								tasks.push(downloadFile(url, false, false, true));
+							}
+
+							// For gallery view, also download to src/assets/notion for optimized images
+							if (LISTING_VIEW === "gallery") {
+								const assetsPath = generateFilePath(url, true);
+								const needsAssetsDownload =
+									!LAST_BUILD_TIME ||
+									entry.LastUpdatedTimeStamp > LAST_BUILD_TIME ||
+									!fs.existsSync(assetsPath);
+
+								if (needsAssetsDownload) {
+									tasks.push(downloadFile(url, true));
+								}
+							}
 						} catch (err) {
 							console.log("Invalid FeaturedImage URL");
 						}

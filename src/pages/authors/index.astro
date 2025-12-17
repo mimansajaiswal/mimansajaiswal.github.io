@@ -1,0 +1,67 @@
+---
+import PageLayout from "@/layouts/Base.astro";
+import { getNavLink } from "@/lib/blog-helpers";
+import { getAllAuthorsWithCounts, shouldShowAuthors } from "@/lib/notion/client";
+import { getNotionColorToTailwindColor } from "@/utils/style-helpers";
+import { slugify } from "@/utils";
+import { AUTHORS_CONFIG } from "@/constants";
+import { siteInfo } from "@/site.config";
+
+// Check if we should show authors
+const showAuthors = await shouldShowAuthors();
+if (!showAuthors || !AUTHORS_CONFIG.enableAuthorPages) {
+	// Return 404 if authors are disabled or only default authors exist
+	return Astro.redirect("/404");
+}
+
+const allAuthors = await getAllAuthorsWithCounts();
+
+const meta = {
+	title: "All Authors",
+	description: "View all authors who have contributed to our content",
+	ogImage: "/og-image/authorsindex---index.png",
+};
+---
+
+<PageLayout meta={meta}>
+	<h1 class="title text-accent-2 mb-6">Authors</h1>
+	<div class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+		{
+			allAuthors.map((author) => {
+				// Use default photo ONLY if author name matches the site's author
+				const isSiteAuthor = author.name === siteInfo.author;
+				const authorPhoto =
+					author.photo || (isSiteAuthor ? AUTHORS_CONFIG.siteAuthorPhoto : undefined);
+				return (
+					<div class="flex items-center">
+						<a
+							class="inline-block"
+							href={getNavLink("/authors/" + slugify(author.name) + "/")}
+							title={`View posts by ${author.name}`}
+							aria-label={`View posts by ${author.name}`}
+							data-astro-prefetch
+						>
+							<span
+								class={`flex items-center gap-2 rounded-lg px-2 py-1 ${getNotionColorToTailwindColor(
+									author.color + "-background",
+									true,
+								)} `}
+							>
+								{authorPhoto && (
+									<img
+										src={authorPhoto}
+										alt={`${author.name}'s avatar`}
+										class="h-5 w-5 rounded-full object-cover"
+										loading="lazy"
+									/>
+								)}
+								{author.name}
+								<span class="count-badge">{author.count}</span>
+							</span>
+						</a>
+					</div>
+				);
+			})
+		}
+	</div>
+</PageLayout>

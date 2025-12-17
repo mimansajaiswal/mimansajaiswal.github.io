@@ -21,6 +21,9 @@ import {
 	CITATIONS,
 	MDX_SNIPPET_TRIGGER,
 	EXTERNAL_CONTENT_CONFIG,
+	AUTHORS_CONFIG,
+	AUTHOR_SHORTCODES,
+	AUTHOR,
 } from "../../constants";
 import { resolveExternalContentDescriptor } from "../external-content/external-content-utils";
 import { extractFootnotesFromBlock } from "../../lib/footnotes";
@@ -71,6 +74,7 @@ import type {
 	Footnote,
 	Citation,
 	ParsedCitationEntry,
+	AuthorProperty,
 } from "@/lib/interfaces";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from "@notionhq/client";
@@ -97,6 +101,22 @@ let blockIdPostIdMap: { [key: string]: string } | null = null;
 let allTagsWithCountsCache:
 	| { name: string; count: number; description: string; color: string }[]
 	| null = null;
+
+// Authors: Cache for authors with counts
+let allAuthorsWithCountsCache:
+	| {
+			name: string;
+			count: number;
+			description: string;
+			color: string;
+			url?: string;
+			photo?: string;
+			bio?: string;
+	  }[]
+	| null = null;
+
+// Authors: Track if Authors property exists in database schema
+let authorsPropertyExistsCache: boolean | null = null;
 
 // Footnotes: Adjusted config (set once at module initialization, includes permission fallback)
 export let adjustedFootnotesConfig: any = null;
@@ -1017,6 +1037,239 @@ export async function getAllTagsWithCounts(): Promise<
 	return sortedTagCounts;
 }
 
+// ============================================================================
+// Author Functions
+// ============================================================================
+
+/**
+ * Parse author description to extract URL, photo, and bio from shortcodes.
+ * Shortcodes are configurable via constants-config.json5 (shortcodes.author-url and shortcodes.author-photo-url)
+ * Remaining text after extraction = bio
+ */
+export function parseAuthorDescription(description: string): {
+	url?: string;
+	photo?: string;
+	bio?: string;
+} {
+	if (!description) {
+		return {};
+	}
+
+	let remaining = description;
+	let url: string | undefined;
+	let photo: string | undefined;
+
+	// Escape special regex characters in shortcode strings
+	const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+	// Extract URL using configurable shortcodes
+	const urlStart = escapeRegex(AUTHOR_SHORTCODES.url.start);
+	const urlEnd = escapeRegex(AUTHOR_SHORTCODES.url.end);
+	const urlRegex = new RegExp(`${urlStart}(.+?)${urlEnd}`);
+	const urlMatch = remaining.match(urlRegex);
+	if (urlMatch) {
+		url = urlMatch[1].trim();
+		remaining = remaining.replace(urlMatch[0], "");
+	}
+
+	// Extract photo using configurable shortcodes
+	const photoStart = escapeRegex(AUTHOR_SHORTCODES.photo.start);
+	const photoEnd = escapeRegex(AUTHOR_SHORTCODES.photo.end);
+	const photoRegex = new RegExp(`${photoStart}(.+?)${photoEnd}`);
+	const photoMatch = remaining.match(photoRegex);
+	if (photoMatch) {
+		photo = photoMatch[1].trim();
+		remaining = remaining.replace(photoMatch[0], "");
+	}
+
+	// Remaining text is the bio (trim whitespace)
+	const bio = remaining.trim() || undefined;
+
+	return { url, photo, bio };
+}
+
+/**
+ * Check if Authors multi-select property exists in the Notion database schema.
+ * Returns true if the property exists, false otherwise.
+ */
+export async function hasAuthorsProperty(): Promise<boolean> {
+	if (authorsPropertyExistsCache !== null) {
+		return authorsPropertyExistsCache;
+	}
+
+	const { propertiesRaw } = await getDataSource();
+	authorsPropertyExistsCache = !!propertiesRaw.Authors?.multi_select;
+	return authorsPropertyExistsCache;
+}
+
+/**
+ * Check if any post has a custom (non-default) author.
+ * This is used with only-when-custom-authors config to determine if author features should be shown.
+ * The default author is the site's AUTHOR constant.
+ */
+export async function hasCustomAuthors(): Promise<boolean> {
+	const hasProperty = await hasAuthorsProperty();
+	if (!hasProperty) {
+		return false;
+	}
+
+	// Default author is the site's AUTHOR constant
+	const defaultName = AUTHOR;
+
+	const allPosts = await getAllPosts();
+	for (const post of allPosts) {
+		if (post.Authors && post.Authors.length > 0) {
+			// Check if any author is not the default
+			for (const author of post.Authors) {
+				if (author.name !== defaultName) {
+					return true;
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
+/**
+ * Get unique authors from a list of posts
+ */
+export function getUniqueAuthors(posts: Post[]): AuthorProperty[] {
+	const authorNames: string[] = [];
+	return posts
+		.filter((post) => post.Authors !== undefined)
+		.flatMap((post) => post.Authors || [])
+		.reduce((acc, author) => {
+			if (!authorNames.includes(author.name)) {
+				acc.push(author);
+				authorNames.push(author.name);
+			}
+			return acc;
+		}, [] as AuthorProperty[])
+		.sort((a: AuthorProperty, b: AuthorProperty) => a.name.localeCompare(b.name));
+}
+
+/**
+ * Get all authors with their post counts.
+ * Mirrors the getAllTagsWithCounts pattern.
+ */
+export async function getAllAuthorsWithCounts(): Promise<
+	{
+		name: string;
+		count: number;
+		description: string;
+		color: string;
+		url?: string;
+		photo?: string;
+		bio?: string;
+	}[]
+> {
+	if (allAuthorsWithCountsCache) {
+		return allAuthorsWithCountsCache;
+	}
+
+	const hasProperty = await hasAuthorsProperty();
+	if (!hasProperty) {
+		allAuthorsWithCountsCache = [];
+		return [];
+	}
+
+	const allPosts = await getAllPosts();
+	const filteredPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
+		? allPosts.filter((post) => !post.Slug.startsWith("_"))
+		: allPosts;
+
+	const { propertiesRaw } = await getDataSource();
+	const options = propertiesRaw.Authors?.multi_select?.options || [];
+
+	// Build a map of author name to raw description
+	const authorsNameWDesc = options.reduce(
+		(acc, option) => {
+			acc[option.name] = option.description || "";
+			return acc;
+		},
+		{} as Record<string, string>,
+	);
+
+	// Build a map of author name to color
+	const authorsNameWColor = options.reduce(
+		(acc, option) => {
+			acc[option.name] = option.color || "default";
+			return acc;
+		},
+		{} as Record<string, string>,
+	);
+
+	const authorCounts: Record<
+		string,
+		{
+			count: number;
+			description: string;
+			color: string;
+			url?: string;
+			photo?: string;
+			bio?: string;
+		}
+	> = {};
+
+	filteredPosts.forEach((post) => {
+		if (!post.Authors) return;
+
+		post.Authors.forEach((author) => {
+			const authorName = author.name;
+			if (authorCounts[authorName]) {
+				authorCounts[authorName].count++;
+			} else {
+				const rawDesc = authorsNameWDesc[authorName] || "";
+				const parsed = parseAuthorDescription(rawDesc);
+				authorCounts[authorName] = {
+					count: 1,
+					description: rawDesc,
+					color: authorsNameWColor[authorName] || author.color || "default",
+					url: parsed.url,
+					photo: parsed.photo,
+					bio: parsed.bio,
+				};
+			}
+		});
+	});
+
+	// Convert to sorted array
+	const sortedAuthorCounts = Object.entries(authorCounts)
+		.map(([name, { count, description, color, url, photo, bio }]) => ({
+			name,
+			count,
+			description,
+			color,
+			url,
+			photo,
+			bio,
+		}))
+		.sort((a, b) => a.name.localeCompare(b.name));
+
+	allAuthorsWithCountsCache = sortedAuthorCounts;
+	return sortedAuthorCounts;
+}
+
+/**
+ * Determine if author bylines and pages should be shown based on config.
+ * Returns true if:
+ * - Authors property exists AND
+ * - (only-when-custom-authors is false OR there are custom authors)
+ */
+export async function shouldShowAuthors(): Promise<boolean> {
+	const hasProperty = await hasAuthorsProperty();
+	if (!hasProperty) {
+		return false;
+	}
+
+	if (!AUTHORS_CONFIG.onlyWhenCustomAuthors) {
+		return true;
+	}
+
+	return await hasCustomAuthors();
+}
+
 export function generateFilePath(url: URL, isImageForAstro: boolean = false) {
 	// Route images to src/assets/notion, everything else to public/notion
 	const BASE_DIR = isImageForAstro
@@ -1060,7 +1313,8 @@ export async function downloadFile(
 	url: URL,
 	isImageForAstro: boolean = false,
 	isFavicon: boolean = false,
-) {
+	convertToPng: boolean = false,
+): Promise<string | void> {
 	let res!: AxiosResponse;
 	try {
 		res = await axios({
@@ -1080,6 +1334,8 @@ export async function downloadFile(
 	}
 
 	const filepath = generateFilePath(url, isImageForAstro);
+	const ext = path.extname(filepath).toLowerCase();
+	const pngPath = path.join(path.dirname(filepath), `${path.parse(filepath).name}.png`);
 
 	let stream = res.data;
 
@@ -1133,6 +1389,22 @@ export async function downloadFile(
 			resolve();
 		});
 	});
+
+	// Convert non-jpg/png images to png when we downloaded an asset image (favicons handled separately)
+	const shouldConvertToPng = convertToPng && !isFavicon && ![".jpg", ".jpeg", ".png"].includes(ext);
+
+	if (shouldConvertToPng) {
+		try {
+			await sharp(filepath).png().toFile(pngPath);
+			fs.unlinkSync(filepath);
+			return pngPath;
+		} catch (err) {
+			console.error("Error converting image to PNG (conversion skipped):", err);
+			return filepath;
+		}
+	}
+
+	return filepath;
 }
 
 export async function processFileBlocks(fileAttachedBlocks: Block[]) {
@@ -1886,6 +2158,48 @@ async function _buildPost(pageObject: responses.PageObject): Promise<Post> {
 	const slugValue = prop.Slug?.formula?.string ? slugify(prop.Slug.formula.string) : "";
 	const externalContentDescriptor = resolveExternalContentDescriptor(externalUrl);
 
+	// Parse Authors multi-select if the property exists
+	// Returns undefined if property doesn't exist (different from empty array)
+	let authors: AuthorProperty[] | undefined = undefined;
+	if (prop.Authors && "multi_select" in prop.Authors) {
+		// Property exists - parse it (may be empty array)
+		const rawAuthors = prop.Authors.multi_select || [];
+
+		// Fetch schema to get author descriptions
+		const { propertiesRaw } = await getDataSource();
+		const options = propertiesRaw.Authors?.multi_select?.options || [];
+		const authorsDescMap = options.reduce(
+			(acc, option) => {
+				acc[option.name] = option.description || "";
+				return acc;
+			},
+			{} as Record<string, string>,
+		);
+
+		const parsedAuthors = rawAuthors.map((author) => {
+			const description = authorsDescMap[author.name] || "";
+			const parsed = parseAuthorDescription(description);
+			return {
+				id: author.id,
+				name: author.name,
+				color: author.color,
+				description: description,
+				url: parsed.url,
+				photo: parsed.photo,
+				bio: parsed.bio,
+			};
+		});
+		// Deduplicate authors by name (keep first occurrence)
+		const seenNames = new Set<string>();
+		authors = parsedAuthors.filter((author) => {
+			if (seenNames.has(author.name)) {
+				return false;
+			}
+			seenNames.add(author.name);
+			return true;
+		});
+	}
+
 	const post: Post = {
 		PageId: pageObject.id,
 		Title: prop.Page?.title ? prop.Page.title.map((richText) => richText.plain_text).join("") : "",
@@ -1915,6 +2229,7 @@ async function _buildPost(pageObject: responses.PageObject): Promise<Post> {
 		IsExternal: isExternal,
 		ExternalUrl: externalUrl || null,
 		ExternalContent: externalContentDescriptor,
+		Authors: authors,
 	};
 	return post;
 }

@@ -29,6 +29,13 @@ export interface Post {
 	IsExternal: boolean;
 	ExternalUrl: string | null;
 	ExternalContent?: ExternalContentDescriptor | null;
+	/**
+	 * Authors from Notion multi-select property.
+	 * - undefined: Authors property doesn't exist in Notion DB (behave as current, no bylines)
+	 * - []: Authors property exists but is empty on this post (use default author from config)
+	 * - AuthorProperty[]: One or more authors assigned to this post
+	 */
+	Authors?: AuthorProperty[];
 }
 
 export type ExternalContentType = "html" | "markdown" | "mdx";
@@ -318,6 +325,17 @@ export interface SelectProperty {
 	name: string;
 	color: string;
 	description: string;
+}
+
+/**
+ * Author property extends SelectProperty with parsed metadata from description shortcodes.
+ * URL and photo are extracted from <<author-url>>...<<author-url>> and <<author-photo-url>>...<<author-photo-url>>
+ * Bio is the remaining text after shortcode extraction.
+ */
+export interface AuthorProperty extends SelectProperty {
+	url?: string;
+	photo?: string;
+	bio?: string;
 }
 
 export interface LinkToPage {

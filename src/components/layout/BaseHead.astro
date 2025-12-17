@@ -15,7 +15,7 @@ import { getNavLink } from "@/lib/blog-helpers";
 
 type Props = SiteMeta;
 
-const { title, description, ogImage, articleDate } = Astro.props;
+const { title, description, ogImage, articleDate, author } = Astro.props;
 
 const titleSeparator = "•";
 const siteTitle = `${title} ${titleSeparator} ${siteInfo.title}`;
@@ -26,6 +26,8 @@ const socialImageURL = new URL(
 ).href;
 const faviconLink = getNavLink("/favicon.ico");
 const isBuildOrPreviewMode = import.meta.env.MODE === "production";
+// Use provided author or fallback to site author
+const metaAuthor = author || siteInfo.author;
 const publicGaTrackingId =
 	isBuildOrPreviewMode &&
 	TRACKING &&
@@ -110,7 +112,7 @@ const useGiscus =
 {/* Primary Meta Tags */}
 <meta name="title" content={siteTitle} />
 <meta name="description" content={description} />
-<meta name="author" content={siteInfo.author} />
+<meta name="author" content={metaAuthor} />
 
 {/* Theme Colour */}
 <meta name="theme-color" content="" />
@@ -135,7 +137,7 @@ const useGiscus =
 {
 	articleDate && (
 		<>
-			<meta property="article:author" content={siteInfo.author} />
+			<meta property="article:author" content={metaAuthor} />
 			<meta property="article:published_time" content={articleDate} />
 		</>
 	)

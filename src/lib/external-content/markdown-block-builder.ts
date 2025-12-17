@@ -792,7 +792,15 @@ export class MarkdownBlockBuilder {
 		if (!node || typeof node.name !== "string" || !node.name.trim()) return "";
 
 		// Attributes that typically hold URLs and should be resolved
-		const URL_ATTRIBUTES = new Set(["href", "src", "poster", "data", "cite", "action", "formaction"]);
+		const URL_ATTRIBUTES = new Set([
+			"href",
+			"src",
+			"poster",
+			"data",
+			"cite",
+			"action",
+			"formaction",
+		]);
 
 		const serializeAttr = (attr: any): string => {
 			if (!attr || attr.type !== "mdxJsxAttribute") return "";

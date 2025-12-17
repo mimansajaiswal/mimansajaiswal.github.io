@@ -62,8 +62,7 @@ const altText =
 const isFirstImage = getFirstImage() && setId;
 
 // Generate a mobile-friendly width (~1200px) plus the original; avoid upscaling smaller files.
-const mobileWidth =
-	downloadedImage && downloadedImage.width > 1200 ? 1200 : downloadedImage?.width;
+const mobileWidth = downloadedImage && downloadedImage.width > 1200 ? 1200 : downloadedImage?.width;
 const imageWidths =
 	downloadedImage && downloadedImage.width > 1200
 		? [mobileWidth, downloadedImage.width]

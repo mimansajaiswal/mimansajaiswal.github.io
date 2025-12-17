@@ -49,10 +49,27 @@ export default function astroImageCacheCleanerCopier(): AstroIntegration {
 					htmlFiles.map(async (htmlFile) => {
 						const content = await readFile(htmlFile, "utf-8");
 						// Match _astro images in: src, srcset, href (for lightbox)
+						// Only match relative paths, not absolute URLs
 						const astroImageRegex =
 							/_astro\/([\p{L}\p{N}_\-\.]+\.(?:jpg|jpeg|png|webp|avif|gif|svg))/gu;
 						let match;
 						while ((match = astroImageRegex.exec(content)) !== null) {
+							// Check if this match is part of an absolute URL by looking backwards
+							const matchIndex = match.index;
+							const contextBefore = content.substring(Math.max(0, matchIndex - 100), matchIndex);
+
+							// Skip if this is an absolute URL (has :// before /_astro/ without a quote in between)
+							const lastQuote = Math.max(
+								contextBefore.lastIndexOf('"'),
+								contextBefore.lastIndexOf("'"),
+							);
+							const lastProtocol = contextBefore.lastIndexOf("://");
+
+							// If there's a protocol marker and no quote after it, this is an absolute URL - skip it
+							if (lastProtocol !== -1 && lastProtocol > lastQuote) {
+								continue;
+							}
+
 							usedImagesSet.add(match[1]);
 						}
 					}),

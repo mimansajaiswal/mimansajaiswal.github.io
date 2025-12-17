@@ -1,6 +1,7 @@
 ---
 import type { HTMLTag } from "astro/types";
 import FormattedDate from "@/components/ui/FormattedDate.astro";
+import AuthorByline from "@/components/layout/AuthorByline.astro";
 import type { Post } from "@/lib/interfaces";
 import { getPostContentByPostId } from "@/lib/notion/client";
 import {
@@ -8,15 +9,23 @@ import {
 	resolvePostHref,
 	setCurrentHeadings,
 	isExternalPost,
+	getNotionImage,
+	getImageComponentFormat,
 } from "@/lib/blog-helpers";
 import NotionBlocks from "@/components/NotionBlocks.astro";
 import { getNotionColorToTailwindColor } from "@/utils/style-helpers";
-import { MENU_PAGES_COLLECTION, BUILD_FOLDER_PATHS } from "@/constants";
+import {
+	MENU_PAGES_COLLECTION,
+	BUILD_FOLDER_PATHS,
+	COVER_AS_HERO_BACKGROUND_ENABLED,
+} from "@/constants";
 import Icon from "@/components/ui/Icon.astro";
 import { buildHeadings, slugify } from "@/utils";
 import fs from "fs/promises";
 import path from "path";
 import superjson from "superjson";
+import { getImage } from "astro:assets";
+import HeroBackgroundCover from "@/components/layout/HeroBackgroundCover.astro";
 
 interface Props {
 	post_full_preview: Post;
@@ -96,82 +105,120 @@ if (!external && shouldUseCache) {
 }
 
 const postLink = resolvePostHref(post_full_preview);
+
+// Check if we should show cover as hero background
+const hasCover = post_full_preview.Cover && post_full_preview.Cover.Url;
+const showHeroBackground = COVER_AS_HERO_BACKGROUND_ENABLED && hasCover;
+
+// Get cover image URL for background
+let coverImageUrl = "";
+if (showHeroBackground && post_full_preview.Cover?.Url) {
+	try {
+		const coverUrl = new URL(post_full_preview.Cover.Url);
+		const downloadedImage = await getNotionImage(coverUrl);
+
+		if (downloadedImage) {
+			const optimized = await getImage({
+				src: downloadedImage,
+				format: getImageComponentFormat(downloadedImage),
+				quality: 85,
+				width: downloadedImage.width,
+			});
+			coverImageUrl = optimized?.src || downloadedImage.src;
+		} else {
+			coverImageUrl = post_full_preview.Cover.Url;
+		}
+	} catch {
+		coverImageUrl = post_full_preview.Cover.Url;
+	}
+}
 ---
 
-<FormattedDate
-	date={new Date(post_full_preview.Date)}
-	class="text-accent/90 min-w-[120px] text-xs"
-/>
+<HeroBackgroundCover
+	enableBackground={showHeroBackground}
+	backgroundUrl={coverImageUrl}
+	class="mb-4"
+>
+	<FormattedDate
+		date={new Date(post_full_preview.Date)}
+		class="text-accent/90 min-w-[120px] text-xs"
+	/>
 
-<Tag class="font-bold">
+	<Tag class="font-bold">
+		{
+			external && (
+				<a
+					href={postLink}
+					class="border-quote/60 text-quote hover:border-quote/80 hover:text-quote mr-2 inline-flex items-center gap-1 rounded border px-2 py-[2px] text-[11px] font-semibold tracking-wider uppercase transition"
+					target="_blank"
+					rel="nofollow noopener"
+					aria-label="Visit external site"
+				>
+					<Icon name={"external-link"} class="h-3.5 w-3.5" aria-hidden="true" />
+					Ext
+				</a>
+			)
+		}
+		{
+			post_full_preview.Pinned && (
+				<Icon
+					class="me-1 inline-block h-6 w-6"
+					name={"pin"}
+					aria-label="Pinned Post"
+					focusable="false"
+					fill="#D50B0D"
+				/>
+			)
+		}
+		<a
+			href={postLink}
+			class="site-page-link inline no-underline"
+			target={external ? "_blank" : undefined}
+			rel={external ? "nofollow noopener" : undefined}
+		>
+			{post_full_preview.Title}
+		</a>
+	</Tag>
+
 	{
-		external && (
-			<a
-				href={postLink}
-				class="border-quote/60 text-quote hover:border-quote/80 hover:text-quote mr-2 inline-flex items-center gap-1 rounded border px-2 py-[2px] text-[11px] font-semibold tracking-wider uppercase transition"
-				target="_blank"
-				rel="nofollow noopener"
-				aria-label="Visit external site"
-			>
-				<Icon name={"external-link"} class="h-3.5 w-3.5" aria-hidden="true" />
-				Ext
-			</a>
+		withDesc && post_full_preview.Excerpt && (
+			<q class="line-clamp-3 block italic">{post_full_preview.Excerpt}</q>
 		)
 	}
+
 	{
-		post_full_preview.Pinned && (
-			<Icon
-				class="me-1 inline-block h-6 w-6"
-				name={"pin"}
-				aria-label="Pinned Post"
-				focusable="false"
-				fill="#D50B0D"
-			/>
+		post_full_preview.Tags && post_full_preview.Tags.length > 0 && (
+			<div class="mt-1 gap-2">
+				<Icon
+					class="me-1 inline-block h-4 w-4"
+					name={"tag-outline"}
+					aria-hidden="true"
+					focusable="false"
+				/>
+				{post_full_preview.Tags.map((tag, i) => (
+					<>
+						<a
+							class={`inline-block rounded-md px-1 text-sm ${getNotionColorToTailwindColor(
+								tag.color + "-background",
+								true,
+							)}`}
+							aria-label={`View more blogs with the tag ${tag.name}`}
+							href={getNavLink("/tags/" + slugify(tag.name) + "/")}
+						>
+							{tag.name}
+						</a>{" "}
+					</>
+				))}
+			</div>
 		)
 	}
-	<a
-		href={postLink}
-		class="site-page-link inline no-underline"
-		target={external ? "_blank" : undefined}
-		rel={external ? "nofollow noopener" : undefined}
-	>
-		{post_full_preview.Title}
-	</a>
-</Tag>
 
-{
-	withDesc && post_full_preview.Excerpt && (
-		<q class="line-clamp-3 block italic">{post_full_preview.Excerpt}</q>
-	)
-}
-
-{
-	post_full_preview.Tags && post_full_preview.Tags.length > 0 && (
-		<div class="mt-1 gap-2">
-			<Icon
-				class="me-1 inline-block h-4 w-4"
-				name={"tag-outline"}
-				aria-hidden="true"
-				focusable="false"
-			/>
-			{post_full_preview.Tags.map((tag, i) => (
-				<>
-					<a
-						class={`inline-block rounded-md px-1 text-sm ${getNotionColorToTailwindColor(
-							tag.color + "-background",
-							true,
-						)}`}
-						aria-label={`View more blogs with the tag ${tag.name}`}
-						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
-					>
-						{tag.name}
-					</a>{" "}
-				</>
-			))}
-		</div>
-	)
-}
-
+	{
+		post_full_preview.Authors !== undefined && (
+			<AuthorByline authors={post_full_preview.Authors} compact={true} />
+		)
+	}
+</HeroBackgroundCover>
 {
 	external ? (
 		<section class="post-body post-preview-full-container">

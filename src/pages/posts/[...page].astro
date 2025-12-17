@@ -2,11 +2,16 @@
 import type { Page, GetStaticPaths } from "astro";
 import PageLayout from "@/layouts/Base.astro";
 import PostPreview from "@/components/listing-layout/PostPreview.astro";
+import PostCardGallery from "@/components/listing-layout/PostCardGallery.astro";
 import Pagination from "@/components/listing-layout/Paginator.astro";
 import { getAllPosts, getAllTagsWithCounts } from "@/lib/notion/client";
 import type { Post, SelectProperty } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor } from "@/utils/style-helpers";
-import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
+import {
+	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
+	NUMBER_OF_POSTS_PER_PAGE,
+	LISTING_VIEW,
+} from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import Icon from "@/components/ui/Icon.astro";
 import { slugify } from "@/utils";
@@ -56,15 +61,23 @@ const paginationProps = {
 	<h1 class="title mb-6">Posts</h1>
 	<div class="grid grid-cols-3 gap-y-16 sm:grid-cols-4 sm:items-start sm:gap-x-8">
 		<section aria-label="Blog post list" class="col-span-3 print:col-span-full">
-			<ul class="space-y-4 text-start">
-				{
-					page.data.map((post) => (
-						<li class="flex max-w-full flex-col flex-wrap gap-1.5 [&_q]:basis-full">
-							<PostPreview post={post} as="h2" withDesc />
-						</li>
-					))
-				}
-			</ul>
+			{
+				LISTING_VIEW === "gallery" ? (
+					<div class="gallery-grid">
+						{page.data.map((post) => (
+							<PostCardGallery post={post} as="h2" />
+						))}
+					</div>
+				) : (
+					<ul class="space-y-4 text-start">
+						{page.data.map((post) => (
+							<li class="flex max-w-full flex-col flex-wrap gap-1.5 [&_q]:basis-full">
+								<PostPreview post={post} as="h2" withDesc />
+							</li>
+						))}
+					</ul>
+				)
+			}
 			<Pagination {...paginationProps} />
 		</section>
 		{

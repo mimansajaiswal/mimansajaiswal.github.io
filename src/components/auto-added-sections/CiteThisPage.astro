@@ -1,5 +1,5 @@
 ---
-import type { Post } from "@/lib/interfaces";
+import type { Post, AuthorProperty } from "@/lib/interfaces";
 import { siteInfo } from "@/siteInfo";
 import { getPostLink, isExternalPost } from "@/lib/blog-helpers";
 import { MENU_PAGES_COLLECTION } from "@/constants";
@@ -31,28 +31,6 @@ const monthNames = [
 ];
 const month = monthNames[postDate.getMonth()];
 
-// Generate citation key in format: lastnameyearfirstNofslug (e.g., "yan2024aligneval")
-const getLastname = (name: string): string => {
-	if (!name || name === "Unknown Author") return "unknown";
-	const parts = name.trim().split(/\s+/);
-	return parts[parts.length - 1].toLowerCase();
-};
-
-const lastname = getLastname(siteInfo.author || "Unknown Author");
-const slugClean = post.Slug.replace(/[-_]/g, "");
-const slugShort = slugClean.substring(0, Math.min(15, slugClean.length)); // Use first 15 chars max
-const citationKey = `${lastname}${year}${slugShort}`;
-
-// Build full URL using Astro.site and getPostLink
-// Astro.site is the canonical site URL from astro.config
-const isPage = post.Collection === MENU_PAGES_COLLECTION;
-const postPath = getPostLink(post.Slug, isPage);
-const fullUrl = Astro.site ? new URL(postPath, Astro.site).toString() : postPath;
-const decodedUrl = decodeURIComponent(fullUrl);
-
-// Extract journal name from site URL (e.g., "eugeneyan.com" from "https://eugeneyan.com")
-const journal = Astro.site ? new URL(Astro.site).hostname : "unknown";
-
 // Format author name for BibTeX (Lastname, Firstname Middlename)
 // Input: "Firstname Middlename Lastname" or "Firstname Lastname"
 // Output: "Lastname, Firstname Middlename" or "Lastname, Firstname"
@@ -74,7 +52,41 @@ const formatAuthorName = (name: string): string => {
 	}
 };
 
-const authorFormatted = formatAuthorName(siteInfo.author || "Unknown Author");
+// Get authors list - use post.Authors if available, otherwise fallback to site author
+const getAuthors = (): string[] => {
+	if (post.Authors && post.Authors.length > 0) {
+		return post.Authors.map((a) => a.name);
+	}
+	if (siteInfo.author) {
+		return [siteInfo.author];
+	}
+	return ["Unknown Author"];
+};
+
+const authors = getAuthors();
+const authorFormatted = authors.map(formatAuthorName).join(" and ");
+
+// Generate citation key in format: lastnameyearfirstNofslug (e.g., "yan2024aligneval")
+const getLastname = (name: string): string => {
+	if (!name || name === "Unknown Author") return "unknown";
+	const parts = name.trim().split(/\s+/);
+	return parts[parts.length - 1].toLowerCase();
+};
+
+const lastname = getLastname(authors[0] || "Unknown Author");
+const slugClean = post.Slug.replace(/[-_]/g, "");
+const slugShort = slugClean.substring(0, Math.min(15, slugClean.length)); // Use first 15 chars max
+const citationKey = `${lastname}${year}${slugShort}`;
+
+// Build full URL using Astro.site and getPostLink
+// Astro.site is the canonical site URL from astro.config
+const isPage = post.Collection === MENU_PAGES_COLLECTION;
+const postPath = getPostLink(post.Slug, isPage);
+const fullUrl = Astro.site ? new URL(postPath, Astro.site).toString() : postPath;
+const decodedUrl = decodeURIComponent(fullUrl);
+
+// Extract journal name from site URL (e.g., "eugeneyan.com" from "https://eugeneyan.com")
+const journal = Astro.site ? new URL(Astro.site).hostname : "unknown";
 
 // Create BibTeX entry in @article format
 const bibtexEntry = `@article{${citationKey},

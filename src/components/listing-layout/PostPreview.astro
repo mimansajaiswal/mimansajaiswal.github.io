@@ -1,6 +1,7 @@
 ---
 import type { HTMLTag } from "astro/types";
 import FormattedDate from "@/components/ui/FormattedDate.astro";
+import AuthorByline from "@/components/layout/AuthorByline.astro";
 import type { Post } from "@/lib/interfaces";
 import { getNotionColorToTailwindColor } from "@/utils/style-helpers";
 import { getNavLink, resolvePostHref, isExternalPost } from "@/lib/blog-helpers";
@@ -42,6 +43,7 @@ const external = isExternalPost(post);
 	</a>
 </Tag>
 {withDesc && post.Excerpt && <q class="line-clamp-3 block italic">{post.Excerpt}</q>}
+{post.Authors !== undefined && <AuthorByline authors={post.Authors} compact={true} />}
 {
 	post.Tags && post.Tags.length > 0 && (
 		<div class="mt-1">

@@ -1,0 +1,23 @@
+---
+interface Props {
+	enableBackground: boolean;
+	backgroundUrl?: string;
+	class?: string;
+}
+
+const { enableBackground, backgroundUrl = "", class: className = "" } = Astro.props;
+---
+
+{
+	enableBackground ? (
+		<div class={`cover-hero-container ${className}`.trim()}>
+			<div class="cover-hero-image" style={`background-image: url('${backgroundUrl}')`} />
+			<div class="cover-hero-tint" />
+			<div class="cover-hero-content">
+				<slot />
+			</div>
+		</div>
+	) : (
+		<slot />
+	)
+}

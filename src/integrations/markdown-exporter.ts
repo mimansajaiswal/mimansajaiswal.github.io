@@ -600,6 +600,14 @@ function buildMarkdownMetadata({
 	const normalizedSlug = slug || HOME_PAGE_SLUG;
 	const tags = (entry.Tags || []).map((tag) => tag.name).filter(Boolean);
 
+	// Get authors - use post Authors if available, otherwise fallback to site author
+	let authors: string | string[];
+	if (entry.Authors && entry.Authors.length > 0) {
+		authors = entry.Authors.length === 1 ? entry.Authors[0].name : entry.Authors.map((a) => a.name);
+	} else {
+		authors = AUTHOR || "Unknown Author";
+	}
+
 	return {
 		title: entry.Title || normalizedSlug || "Untitled",
 		slug: normalizedSlug,
@@ -609,7 +617,7 @@ function buildMarkdownMetadata({
 		updated_at: normalizeDate(entry.LastUpdatedDate) || normalizeDate(entry.LastUpdatedTimeStamp),
 		tags,
 		excerpt: entry.Excerpt || undefined,
-		author: AUTHOR || "Unknown Author",
+		author: authors,
 		external_url: entry.ExternalUrl || undefined,
 	};
 }

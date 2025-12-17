@@ -200,6 +200,42 @@ export const DATABASE_ID =
 export const DATA_SOURCE_ID =
 	process.env.DATA_SOURCE_ID || key_value_from_json?.notion?.["data-source-id"] || "";
 export const AUTHOR = key_value_from_json?.["site-info"]?.author || "";
+
+// Authors configuration for multi-author support
+export interface AuthorsConfig {
+	siteAuthorUrl: string;
+	siteAuthorPhoto: string;
+	enableAuthorPages: boolean;
+	onlyWhenCustomAuthors: boolean;
+}
+
+export const AUTHORS_CONFIG: AuthorsConfig = {
+	siteAuthorUrl: key_value_from_json?.["site-info"]?.["site-author-url"] || "",
+	siteAuthorPhoto: key_value_from_json?.["site-info"]?.["site-author-photo"] || "",
+	enableAuthorPages: key_value_from_json?.["site-info"]?.authors?.["enable-author-pages"] ?? true,
+	onlyWhenCustomAuthors:
+		key_value_from_json?.["site-info"]?.authors?.["only-when-custom-authors"] ?? true,
+};
+
+// Author shortcodes for parsing description field
+export const AUTHOR_SHORTCODES = {
+	url: {
+		start:
+			key_value_from_json?.["shortcodes"]?.["author-desc"]?.["author-url"]?.start ||
+			"<<author-url>>",
+		end:
+			key_value_from_json?.["shortcodes"]?.["author-desc"]?.["author-url"]?.end || "<<author-url>>",
+	},
+	photo: {
+		start:
+			key_value_from_json?.["shortcodes"]?.["author-desc"]?.["author-photo-url"]?.start ||
+			"<<author-photo-url>>",
+		end:
+			key_value_from_json?.["shortcodes"]?.["author-desc"]?.["author-photo-url"]?.end ||
+			"<<author-photo-url>>",
+	},
+};
+
 export const TRACKING = key_value_from_json["tracking"] || {};
 export const WEBMENTION_API_KEY =
 	import.meta.env.WEBMENTION_API_KEY ||
@@ -340,6 +376,15 @@ export const GISCUS = key_value_from_json?.comments?.giscus || null;
 export const BLUESKY_COMM = key_value_from_json?.comments?.["bluesky-comments"] || {};
 
 export const THEME = key_value_from_json["theme"] || {};
+
+export const COVER_AS_HERO_BACKGROUND_ENABLED =
+	key_value_from_json?.["theme"]?.["cover-as-hero-background"] ?? false;
+
+// Normalize listing-view: anything except explicit "list" falls back to the default "list".
+export const LISTING_VIEW: "list" | "gallery" =
+	key_value_from_json?.["collections-and-listings"]?.["listing-view"] === "gallery"
+		? "gallery"
+		: "list";
 
 export const GOOGLE_SEARCH_CONSOLE_META_TAG =
 	key_value_from_json?.tracking?.["google-search-console-html-tag"] || null;
