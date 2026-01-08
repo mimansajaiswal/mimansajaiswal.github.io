@@ -618,7 +618,7 @@ ${createCssVariables("dark")}
 
   /* Theme Icon */
   .theme-toggle-btn {
-    @apply hover:text-accent hover:ring-accent relative h-10 w-10 cursor-pointer rounded-md p-2 transition-all hover:ring-2;
+    @apply hover:text-accent relative h-10 w-10 cursor-pointer rounded-md p-2 transition-all;
   }
 
   .theme-icon {
@@ -850,7 +850,41 @@ ${createCssVariables("dark")}
     @apply bg-bgColor/90 text-accent absolute -inset-x-4 top-14 hidden flex-col items-end rounded-md py-2 text-base shadow-sm backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden;
   }
   .nav-link {
-    @apply sm:hover:decoration-accent-2/40 w-full px-4 py-4 text-right underline-offset-4 sm:w-auto sm:py-0 sm:text-left sm:hover:underline sm:hover:decoration-wavy;
+    @apply relative z-0 w-full px-4 py-4 text-right sm:w-auto sm:py-0 sm:text-left;
+  }
+  .nav-link::before {
+    content: "";
+    position: absolute;
+    left: 0.08em;
+    right: 0.08em;
+    bottom: 0.05em;
+    height: 0.5em;
+    border-radius: 0.4em 0.2em;
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--color-accent-2) 4%, transparent),
+        color-mix(in srgb, var(--color-accent-2) 10%, transparent) 6%,
+        color-mix(in srgb, var(--color-accent-2) 5%, transparent)
+      );
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 200ms ease;
+    z-index: -1;
+  }
+  .nav-link:hover::before,
+  .nav-link:focus-visible::before {
+    transform: scaleX(1);
+  }
+  .nav-link[aria-current="page"]::before {
+    transform: scaleX(1);
+    height: 0.75em;
+    background-image: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-accent) 8%, transparent),
+      color-mix(in srgb, var(--color-accent) 20%, transparent) 6%,
+      color-mix(in srgb, var(--color-accent) 10%, transparent)
+    );
   }
 
   /* Footer */
@@ -858,10 +892,57 @@ ${createCssVariables("dark")}
     @apply text-accent-2 mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%];
   }
   .footer-nav {
-    @apply flex flex-wrap gap-x-2 rounded-sm border-t-2 border-b-2 border-gray-200 sm:gap-x-0 sm:divide-x sm:divide-gray-300 sm:border-none dark:border-gray-700 dark:sm:divide-gray-700 print:hidden;
+    @apply flex flex-wrap gap-x-2 rounded-sm border-t-2 border-b-2 border-gray-200 sm:gap-x-3 sm:border-none dark:border-gray-700 print:hidden;
+  }
+  .footer-separator {
+    @apply flex items-center;
+  }
+  .footer-divider {
+    @apply my-2 h-px w-full bg-textColor/10 sm:my-0 sm:h-6 sm:w-px sm:mx-3;
   }
   .footer-link {
-    @apply sm:hover:text-accent-2 px-4 py-2 underline-offset-4 sm:px-2 sm:py-0 sm:hover:underline;
+    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0;
+  }
+  .footer-link + .footer-link {
+    @apply sm:pl-2;
+  }
+  .footer-link + .footer-link::before {
+    content: "·";
+    @apply hidden sm:inline-block sm:me-2 text-textColor/40;
+  }
+  .footer-link::before {
+    content: "";
+    position: absolute;
+    left: 0.08em;
+    right: 0.08em;
+    bottom: 0.05em;
+    height: 0.5em;
+    border-radius: 0.4em 0.2em;
+    background-image:
+      linear-gradient(
+        to right,
+        color-mix(in srgb, var(--color-accent-2) 4%, transparent),
+        color-mix(in srgb, var(--color-accent-2) 10%, transparent) 6%,
+        color-mix(in srgb, var(--color-accent-2) 5%, transparent)
+      );
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 200ms ease;
+    z-index: -1;
+  }
+  .footer-link:hover::before,
+  .footer-link:focus-visible::before {
+    transform: scaleX(1);
+  }
+  .footer-link[aria-current="page"]::before {
+    transform: scaleX(1);
+    height: 0.7em;
+    background-image: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-accent) 8%, transparent),
+      color-mix(in srgb, var(--color-accent) 20%, transparent) 6%,
+      color-mix(in srgb, var(--color-accent) 10%, transparent)
+    );
   }
 
   /* Equation */
@@ -876,7 +957,7 @@ ${createCssVariables("dark")}
 
   /* Search */
   .search-btn {
-    @apply hover:text-accent hover:ring-accent flex h-10 w-10 cursor-pointer items-center justify-center rounded-md transition-all hover:ring-2;
+    @apply hover:text-accent flex h-10 w-10 cursor-pointer items-center justify-center rounded-md transition-all;
   }
 
   .search-dialog {
@@ -1206,14 +1287,11 @@ html.dark :not(.datatable-ascending):not(.datatable-descending)>.datatable-sorte
 
 /* Post Card for Gallery View */
 .post-card {
-  @apply relative overflow-hidden rounded-lg border bg-bgColor transition-[box-shadow,transform,border-color] duration-200 ease-in-out;
-  border-color: color-mix(in srgb, var(--color-textColor) 10%, transparent);
+  @apply relative overflow-hidden rounded-lg bg-bgColor transition-[box-shadow,transform] duration-200 ease-in-out;
 }
 
 .post-card:hover {
-  @apply -translate-y-[2px];
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-textColor) 10%, transparent);
-  border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+  @apply translate-y-0;
 }
 
 /* Card link - covers entire card */
@@ -1223,11 +1301,12 @@ html.dark :not(.datatable-ascending):not(.datatable-descending)>.datatable-sorte
 
 /* Image container with 3:2 aspect ratio */
 .post-card-image-container {
-  @apply relative overflow-hidden aspect-[3/2];
+  @apply relative overflow-hidden rounded-lg border aspect-[3/2];
+  border-color: color-mix(in srgb, var(--color-textColor) 6%, transparent);
 }
 
 .post-card-image {
-  @apply h-full w-full object-cover transition-transform duration-300 ease-in-out;
+  @apply h-full w-full object-cover rounded-lg transition-transform duration-300 ease-in-out;
 }
 
 .post-card:hover .post-card-image {
@@ -1235,8 +1314,9 @@ html.dark :not(.datatable-ascending):not(.datatable-descending)>.datatable-sorte
 }
 
 .post-card-placeholder {
-  @apply flex h-full w-full items-center justify-center;
+  @apply flex h-full w-full items-center justify-center rounded-lg;
   background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-accent) 20%, transparent));
+  transition: transform 300ms ease, filter 300ms ease;
 }
 
 .post-card-placeholder span {
@@ -1244,14 +1324,19 @@ html.dark :not(.datatable-ascending):not(.datatable-descending)>.datatable-sorte
   color: color-mix(in srgb, var(--color-accent) 50%, transparent);
 }
 
+.post-card:hover .post-card-placeholder {
+  transform: scale(1.05);
+  filter: brightness(1.03);
+}
+
 /* Tags section - positioned at bottom, allows separate clicks */
 .post-card-tags {
-  @apply flex flex-wrap items-baseline gap-1 px-3 pb-3;
+  @apply flex flex-wrap items-baseline gap-1 px-0 pb-3;
 }
 
 /* Authors section - positioned above tags, allows separate clicks */
 .post-card-authors {
-  @apply px-3 pb-1;
+  @apply -mt-1 px-0 pb-1;
 }
 
 /* Hero Background (formerly Cover Overlay) for Hero and Stream */

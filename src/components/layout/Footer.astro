@@ -3,6 +3,7 @@ import { getMenu } from "@/utils";
 import SocialList from "@/components/ui/SocialList.astro";
 
 const menuLinks = await getMenu();
+const pathname = Astro.url.pathname;
 ---
 
 <footer class="site-footer" id="main-footer">
@@ -10,11 +11,15 @@ const menuLinks = await getMenu();
 		{
 			menuLinks.map((link, index) => (
 				<>
-					<a href={link.path} class="footer-link">
+					<a
+						href={link.path}
+						class="footer-link"
+						aria-current={pathname === link.path ? "page" : false}
+					>
 						{link.title}
 					</a>
 					{index < menuLinks.length - 1 && (
-						<div class="flex items-center sm:hidden">
+						<div class="footer-separator sm:hidden" aria-hidden="true">
 							<p>•</p>
 						</div>
 					)}
@@ -22,5 +27,6 @@ const menuLinks = await getMenu();
 			))
 		}
 	</nav>
+	<div class="footer-divider" aria-hidden="true"></div>
 	<SocialList />
 </footer>

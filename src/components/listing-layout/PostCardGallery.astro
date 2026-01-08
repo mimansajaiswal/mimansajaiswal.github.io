@@ -125,9 +125,12 @@ const hasAuthors = post.Authors !== undefined && post.Authors.length > 0;
 		</div>
 
 		{/* Card Content */}
-		<div class="p-2">
+		<div class="pt-2 pb-1">
 			{/* Date */}
-			<FormattedDate date={new Date(post.Date)} class="text-accent/80 mb-1 block text-xs" />
+			<FormattedDate
+				date={new Date(post.Date)}
+				class="text-accent/80 mb-1 block font-mono text-[10px]"
+			/>
 
 			{/* Title */}
 			<Tag class="mb-1 text-sm leading-snug font-semibold">
@@ -137,7 +140,7 @@ const hasAuthors = post.Authors !== undefined && post.Authors.length > 0;
 			{/* Excerpt - shorter for cards */}
 			{
 				withDesc && post.Excerpt && (
-					<q class="text-textColor/70 line-clamp-2 block text-xs italic">{post.Excerpt}</q>
+					<p class="text-textColor/70 line-clamp-2 block text-xs italic">{post.Excerpt}</p>
 				)
 			}
 		</div>
@@ -170,7 +173,7 @@ const hasAuthors = post.Authors !== undefined && post.Authors.length > 0;
 				{post.Tags.slice(0, 3).map((tag, i) => (
 					<>
 						<a
-							class={`inline-block rounded-md px-1 text-sm ${getNotionColorToTailwindColor(
+							class={`inline-block rounded-md px-1 text-xs ${getNotionColorToTailwindColor(
 								tag.color + "-background",
 								true,
 							)}`}
