@@ -403,6 +403,16 @@ export const getNavLink = (nav: string) => {
 	return path.join(BASE_PATH, nav);
 };
 
+export const normalizeNavPath = (inputPath: string, basePath = import.meta.env.BASE_URL) => {
+	const base = (basePath || "").replace(/\/+$/, "");
+	let out = inputPath || "/";
+	if (base && out.startsWith(base)) {
+		out = out.slice(base.length) || "/";
+	}
+	out = out.replace(/\/+$/, "");
+	return out === "" ? "/" : out;
+};
+
 export const getAnchorLinkAndBlock = async (
 	richText: RichText,
 ): Promise<{

@@ -1,9 +1,10 @@
 ---
 import { getMenu } from "@/utils";
+import { normalizeNavPath } from "@/lib/blog-helpers";
 import SocialList from "@/components/ui/SocialList.astro";
 
 const menuLinks = await getMenu();
-const pathname = Astro.url.pathname;
+const currentPath = normalizeNavPath(Astro.url.pathname);
 ---
 
 <footer class="site-footer" id="main-footer">
@@ -14,12 +15,12 @@ const pathname = Astro.url.pathname;
 					<a
 						href={link.path}
 						class="footer-link"
-						aria-current={pathname === link.path ? "page" : false}
+						aria-current={currentPath === normalizeNavPath(link.path) ? "page" : false}
 					>
 						{link.title}
 					</a>
 					{index < menuLinks.length - 1 && (
-						<div class="footer-separator sm:hidden" aria-hidden="true">
+						<div class="footer-separator" aria-hidden="true">
 							<p>•</p>
 						</div>
 					)}
@@ -27,6 +28,5 @@ const pathname = Astro.url.pathname;
 			))
 		}
 	</nav>
-	<div class="footer-divider" aria-hidden="true"></div>
 	<SocialList />
 </footer>

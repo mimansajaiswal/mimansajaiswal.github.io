@@ -33,11 +33,15 @@ export async function getCollectionsWDesc() {
 export async function getMenu(): Promise<
 	{ title: string; path: string; children?: { title: string; path: string }[] }[]
 > {
+	const withTrailingSlash = (path: string) => {
+		if (path === "/") return "/";
+		return path.endsWith("/") ? path : `${path}/`;
+	};
 	const pages = await getAllPages();
 	const collections = await getCollections();
 	const collectionLinks = collections.map((name) => ({
 		title: name,
-		path: getNavLink("/collections/" + slugify(name)),
+		path: withTrailingSlash(getNavLink("/collections/" + slugify(name))),
 	}));
 
 	const pageLinks = pages
@@ -54,7 +58,7 @@ export async function getMenu(): Promise<
 		.sort((a, b) => a.Rank - b.Rank)
 		.map((page) => ({
 			title: page.Title,
-			path: getNavLink(page.Slug === HOME_PAGE_SLUG ? "/" : "/" + page.Slug),
+			path: withTrailingSlash(getNavLink(page.Slug === HOME_PAGE_SLUG ? "/" : "/" + page.Slug)),
 		}));
 
 	return [...pageLinks, ...collectionLinks];

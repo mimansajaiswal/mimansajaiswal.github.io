@@ -10,9 +10,9 @@ const { richText } = Astro.props;
 
 {
 	richText.Annotation.Underline ? (
-		<u class="underline">
+		<span class="annotation-underline">
 			<slot />
-		</u>
+		</span>
 	) : (
 		<slot />
 	)

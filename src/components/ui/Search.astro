@@ -85,6 +85,10 @@ import Icon from "@/components/ui/Icon.astro";
 					},
 				});
 
+				if (this.dialog.open) {
+					requestAnimationFrame(() => this.querySelector("input")?.focus());
+				}
+
 				// Start observing the dialog for changes
 				this.observer.observe(this.dialog, { childList: true, subtree: true });
 

@@ -1,18 +1,30 @@
 ---
 import type { RichText } from "@/lib/interfaces.ts";
-import { getNotionColorToTailwindColor } from "@/utils/style-helpers";
+import {
+	getNotionAnnotationBackgroundVars,
+	getNotionColorToTailwindColor,
+} from "@/utils/style-helpers";
 
 export interface Props {
 	richText: RichText;
 }
 
 const { richText } = Astro.props;
+const annotationColor = richText.Annotation.Color;
+const annotationBackgroundVars = annotationColor
+	? getNotionAnnotationBackgroundVars(annotationColor)
+	: null;
+const textColorClass = annotationColor ? getNotionColorToTailwindColor(annotationColor) : null;
 ---
 
 {
-	richText.Annotation.Color &&
-	!["default", "default_background", "default-background"].includes(richText.Annotation.Color) ? (
-		<span class={`${getNotionColorToTailwindColor(richText.Annotation.Color)} rounded-sm px-1`}>
+	annotationBackgroundVars &&
+	!["default", "default_background", "default-background"].includes(annotationColor) ? (
+		<span class={`${annotationBackgroundVars.className}`} style={annotationBackgroundVars.style}>
+			<slot />
+		</span>
+	) : textColorClass ? (
+		<span class={textColorClass}>
 			<slot />
 		</span>
 	) : (

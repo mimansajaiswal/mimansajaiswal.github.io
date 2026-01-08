@@ -54,6 +54,52 @@ export const getNotionColorToTailwindColor = (s: string, isTag: boolean = false)
 	return colorMap[kebabCase];
 };
 
+export const getNotionAnnotationBackgroundVars = (s: string) => {
+	// Keep mappings as explicit static strings so Tailwind can detect classes and vars reliably.
+	const kebabCase = s.replaceAll("_", "-");
+
+	const annotationBgMap = {
+		"gray-background": {
+			className: "ann-bg-c",
+			style: "--abc: var(--color-ngray-bg-light); --abc-dark: var(--color-ngray-bg-dark);",
+		},
+		"brown-background": {
+			className: "ann-bg-c",
+			style: "--abc: var(--color-nbrown-bg-light); --abc-dark: var(--color-nbrown-bg-dark);",
+		},
+		"orange-background": {
+			className: "ann-bg-c",
+			style: "--abc: var(--color-norange-bg-light); --abc-dark: var(--color-norange-bg-dark);",
+		},
+		"yellow-background": {
+			className: "ann-bg-c",
+			style: "--abc: var(--color-nyellow-bg-light); --abc-dark: var(--color-nyellow-bg-dark);",
+		},
+		"green-background": {
+			className: "ann-bg-c",
+			style: "--abc: var(--color-ngreen-bg-light); --abc-dark: var(--color-ngreen-bg-dark);",
+		},
+		"blue-background": {
+			className: "ann-bg-c",
+			style: "--abc: var(--color-nblue-bg-light); --abc-dark: var(--color-nblue-bg-dark);",
+		},
+		"purple-background": {
+			className: "ann-bg-c",
+			style: "--abc: var(--color-npurple-bg-light); --abc-dark: var(--color-npurple-bg-dark);",
+		},
+		"pink-background": {
+			className: "ann-bg-c",
+			style: "--abc: var(--color-npink-bg-light); --abc-dark: var(--color-npink-bg-dark);",
+		},
+		"red-background": {
+			className: "ann-bg-c",
+			style: "--abc: var(--color-nred-bg-light); --abc-dark: var(--color-nred-bg-dark);",
+		},
+	};
+
+	return annotationBgMap[kebabCase] ?? null;
+};
+
 export const getIconTailwindFilterStyle = (url: string): string => {
 	// if (!url.startsWith('https://www.notion.so/icons/')) {
 	//       return '';

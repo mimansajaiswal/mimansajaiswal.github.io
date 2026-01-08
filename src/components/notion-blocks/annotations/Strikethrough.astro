@@ -10,7 +10,7 @@ const { richText } = Astro.props;
 
 {
 	richText.Annotation.Strikethrough ? (
-		<span class="line-through decoration-slate-500/50">
+		<span class="annotation-strikethrough">
 			<slot />
 		</span>
 	) : (

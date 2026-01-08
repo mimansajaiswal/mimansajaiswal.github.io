@@ -567,11 +567,11 @@ ${createCssVariables("dark")}
   }
 
   .toc-content {
-    @apply border-accent/10 bg-bgColor shadow-accent/5 absolute right-1 bottom-0 max-h-[55vh] w-60 overflow-y-auto rounded-xl border p-2 shadow-xl transition-all duration-200 sm:top-0 sm:bottom-auto sm:max-h-[68vh];
+    @apply border-accent/10 bg-bgColor shadow-accent/5 absolute right-1 bottom-0 max-h-[55vh] w-76 overflow-y-auto rounded-xl border p-2 shadow-xl transition-all duration-200 sm:top-0 sm:bottom-auto sm:max-h-[68vh];
   }
 
   .bottom-toc-button {
-    @apply fixed end-4 ${bottomTocButtonBottom} z-30 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 sm:hidden dark:bg-zinc-700 print:hidden;
+    @apply fixed end-4 ${bottomTocButtonBottom} z-30 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border text-3xl transition-all duration-300 sm:hidden print:hidden;
   }
 
   /* Social List */
@@ -590,8 +590,23 @@ ${createCssVariables("dark")}
 
   /* To-Top Button */
   .to-top-btn {
-    @apply fixed end-4 ${toTopBtnBottom} z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 dark:bg-zinc-700 print:hidden;
+    @apply fixed end-4 ${toTopBtnBottom} z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center rounded-full border text-3xl opacity-0 transition-all duration-300 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 print:hidden;
   }
+
+  .bottom-toc-button,
+  .to-top-btn,
+  .copy-markdown-btn {
+    background-color: color-mix(in srgb, var(--color-accent-2) 12%, var(--color-bgColor));
+    border-color: color-mix(in srgb, var(--color-accent-2) 40%, var(--color-bgColor));
+    color: color-mix(in srgb, var(--color-accent-2) 80%, var(--color-bgColor));
+  }
+
+  .bottom-toc-button svg,
+  .to-top-btn svg,
+  .copy-markdown-btn svg {
+    opacity: 0.75;
+  }
+
 
   /* Copy Markdown Button */
   .copy-floating-btn {
@@ -605,8 +620,9 @@ ${createCssVariables("dark")}
   }
 
   .copy-markdown-btn {
-    @apply inline-flex items-center gap-1 transition disabled:opacity-60 disabled:cursor-not-allowed h-10 w-10 rounded-full border border-accent/30 bg-bgColor/90 text-textColor shadow-lg flex items-center justify-center hover:border-accent/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent/60 cursor-pointer backdrop-blur-md dark:bg-bgColor/80 dark:border-accent/25;
+    @apply inline-flex items-center gap-1 transition disabled:opacity-60 disabled:cursor-not-allowed h-10 w-10 rounded-full border shadow-lg flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer backdrop-blur-md print:hidden;
   }
+
 
   .copy-markdown-btn[data-copy-state="success"] {
     @apply border-green-500/60 dark:border-green-400/60;
@@ -628,6 +644,23 @@ ${createCssVariables("dark")}
   /* Annotations */
   .anchor-link-dashed {
     @apply text-link decoration-accent-2/40 underline decoration-dashed underline-offset-2;
+  }
+
+  .ann-bg-c {
+    background-color: var(--abc, transparent);
+    @apply rounded-sm px-1;
+  }
+
+  :root.dark .ann-bg-c {
+    background-color: var(--abc-dark, var(--abc, transparent));
+  }
+
+  .annotation-underline {
+    @apply underline;
+  }
+
+  .annotation-strikethrough {
+    @apply line-through decoration-slate-500/50;
   }
 
   /* Author Byline */
@@ -847,30 +880,38 @@ ${createCssVariables("dark")}
     @apply relative mb-8 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%];
   }
   .nav-menu {
-    @apply bg-bgColor/90 text-accent absolute -inset-x-4 top-14 hidden flex-col items-end rounded-md py-2 text-base shadow-sm backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden;
+    @apply bg-bgColor/90 text-accent absolute -inset-x-4 top-14 hidden flex-col items-end rounded-md py-2 text-base shadow-sm backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden gap-y-3 sm:gap-y-0 lg:gap-x-4;
   }
   .nav-link {
-    @apply relative z-0 w-full px-4 py-4 text-right sm:w-auto sm:py-0 sm:text-left;
+    @apply relative z-0 w-fit self-end px-3 py-1 text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left;
   }
   .nav-link::before {
     content: "";
     position: absolute;
     left: 0.08em;
     right: 0.08em;
-    bottom: 0.05em;
-    height: 0.5em;
+    bottom: 0;
+    height: 0.42em;
     border-radius: 0.4em 0.2em;
     background-image:
       linear-gradient(
         to right,
-        color-mix(in srgb, var(--color-accent-2) 4%, transparent),
-        color-mix(in srgb, var(--color-accent-2) 10%, transparent) 6%,
-        color-mix(in srgb, var(--color-accent-2) 5%, transparent)
+        color-mix(in srgb, var(--color-accent) 4%, transparent),
+        color-mix(in srgb, var(--color-accent) 10%, transparent) 6%,
+        color-mix(in srgb, var(--color-accent) 5%, transparent)
       );
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 200ms ease;
     z-index: -1;
+  }
+  .dark .nav-link::before {
+    background-image: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-accent) 6%, transparent),
+      color-mix(in srgb, var(--color-accent) 14%, transparent) 6%,
+      color-mix(in srgb, var(--color-accent) 7%, transparent)
+    );
   }
   .nav-link:hover::before,
   .nav-link:focus-visible::before {
@@ -878,37 +919,30 @@ ${createCssVariables("dark")}
   }
   .nav-link[aria-current="page"]::before {
     transform: scaleX(1);
-    height: 0.75em;
+    height: 0.62em;
     background-image: linear-gradient(
       to right,
-      color-mix(in srgb, var(--color-accent) 8%, transparent),
-      color-mix(in srgb, var(--color-accent) 20%, transparent) 6%,
-      color-mix(in srgb, var(--color-accent) 10%, transparent)
+      color-mix(in srgb, var(--color-accent-2) 8%, transparent),
+      color-mix(in srgb, var(--color-accent-2) 20%, transparent) 6%,
+      color-mix(in srgb, var(--color-accent-2) 10%, transparent)
     );
   }
 
   /* Footer */
   .site-footer {
-    @apply text-accent-2 mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%];
+    @apply text-accent mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%];
   }
   .footer-nav {
-    @apply flex flex-wrap gap-x-2 rounded-sm border-t-2 border-b-2 border-gray-200 sm:gap-x-3 sm:border-none dark:border-gray-700 print:hidden;
+    @apply flex flex-wrap gap-x-2 rounded-sm border-t-2 border-b-2 border-gray-200 sm:gap-x-2 sm:border-none dark:border-gray-700 print:hidden;
   }
   .footer-separator {
-    @apply flex items-center;
-  }
-  .footer-divider {
-    @apply my-2 h-px w-full bg-textColor/10 sm:my-0 sm:h-6 sm:w-px sm:mx-3;
+    @apply flex items-center text-accent/45;
   }
   .footer-link {
     @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0;
   }
   .footer-link + .footer-link {
-    @apply sm:pl-2;
-  }
-  .footer-link + .footer-link::before {
-    content: "·";
-    @apply hidden sm:inline-block sm:me-2 text-textColor/40;
+    @apply sm:pl-0;
   }
   .footer-link::before {
     content: "";
@@ -921,14 +955,22 @@ ${createCssVariables("dark")}
     background-image:
       linear-gradient(
         to right,
-        color-mix(in srgb, var(--color-accent-2) 4%, transparent),
-        color-mix(in srgb, var(--color-accent-2) 10%, transparent) 6%,
-        color-mix(in srgb, var(--color-accent-2) 5%, transparent)
+        color-mix(in srgb, var(--color-accent) 4%, transparent),
+        color-mix(in srgb, var(--color-accent) 10%, transparent) 6%,
+        color-mix(in srgb, var(--color-accent) 5%, transparent)
       );
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 200ms ease;
     z-index: -1;
+  }
+  .dark .footer-link::before {
+    background-image: linear-gradient(
+      to right,
+      color-mix(in srgb, var(--color-accent) 6%, transparent),
+      color-mix(in srgb, var(--color-accent) 14%, transparent) 6%,
+      color-mix(in srgb, var(--color-accent) 7%, transparent)
+    );
   }
   .footer-link:hover::before,
   .footer-link:focus-visible::before {
@@ -939,9 +981,9 @@ ${createCssVariables("dark")}
     height: 0.7em;
     background-image: linear-gradient(
       to right,
-      color-mix(in srgb, var(--color-accent) 8%, transparent),
-      color-mix(in srgb, var(--color-accent) 20%, transparent) 6%,
-      color-mix(in srgb, var(--color-accent) 10%, transparent)
+      color-mix(in srgb, var(--color-accent-2) 8%, transparent),
+      color-mix(in srgb, var(--color-accent-2) 20%, transparent) 6%,
+      color-mix(in srgb, var(--color-accent-2) 10%, transparent)
     );
   }
 

@@ -3,13 +3,14 @@ import { Image } from "astro:assets";
 import Search from "@/components/ui/Search.astro";
 import { getMenu } from "@/utils";
 import { siteInfo } from "@/site.config";
-import { getNavLink, getNotionImage } from "@/lib/blog-helpers";
+import { getNavLink, getNotionImage, normalizeNavPath } from "@/lib/blog-helpers";
 import Icon from "@/components/ui/Icon.astro";
 import ThemeIcon from "@/components/ui/ThemeIcon.astro";
 
 const menuLinks = await getMenu();
 
 const url = new URL(Astro.request.url);
+const currentPath = normalizeNavPath(url.pathname);
 
 let customIconImage = null;
 if (siteInfo.logo && siteInfo.logo.Type === "file") {
@@ -28,7 +29,7 @@ const rss_path = getNavLink("/rss.xml");
 		<a
 			href={getNavLink("/")}
 			class="inline-flex items-center grayscale hover:filter-none sm:relative sm:inline-block"
-			aria-current={url.pathname === "/" ? "page" : false}
+			aria-current={currentPath === "/" ? "page" : false}
 		>
 			{
 				siteInfo.logo && siteInfo.logo.Type === "emoji" ? (
@@ -74,7 +75,7 @@ const rss_path = getNavLink("/rss.xml");
 					<a
 						href={link.path}
 						class="nav-link"
-						aria-current={url.pathname === link.path ? "page" : false}
+						aria-current={currentPath === normalizeNavPath(link.path) ? "page" : false}
 						data-astro-prefetch
 					>
 						{link.title}
