@@ -124,7 +124,7 @@ export const filePath = (url: URL): string => {
 
 export const buildTimeFilePath = (url: URL): string => {
 	const [dir, filename] = url.pathname.split("/").slice(-2);
-	return `/notion/${dir}/${filename}`;
+	return `/notion/${dir}/${decodeURIComponent(filename)}`;
 };
 
 export function getInterlinkedContentInPage(entryId: string) {

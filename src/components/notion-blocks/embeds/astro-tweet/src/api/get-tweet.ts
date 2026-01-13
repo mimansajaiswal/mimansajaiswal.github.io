@@ -61,7 +61,7 @@ export async function getTweet(id: string, fetchOptions?: RequestInit): Promise<
 	if (res.status === 404) return;
 
 	throw new TwitterApiError({
-		message: typeof data.error === "string" ? data.error : "Bad request.",
+		message: typeof data?.error === "string" ? data.error : "Bad request.",
 		status: res.status,
 		data,
 	});

@@ -778,7 +778,7 @@ export async function getAllBlocksByBlockId(
 				await _getSyncedBlockChildren(block);
 			block.SyncedBlock.Children = syncedChildren;
 			allFileBlocks.push(...syncedFileBlocks);
-		} else if (block.Type === "toggle" && block.Toggle) {
+		} else if (block.Type === "toggle" && block.Toggle && block.HasChildren) {
 			const { blocks: children, fileBlocks: childFileBlocks } = await getAllBlocksByBlockId(
 				block.Id,
 			);

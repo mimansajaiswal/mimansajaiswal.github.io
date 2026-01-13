@@ -93,8 +93,14 @@ export interface DateFilterCondition {
 	on_or_after?: string;
 }
 
-export interface PropertyValueSortObject {
-	property?: string;
-	timestamp?: string;
-	direction: string;
-}
+type PropertySort = {
+	property: string;
+	direction: "ascending" | "descending";
+};
+
+type TimestampSort = {
+	timestamp: "created_time" | "last_edited_time";
+	direction: "ascending" | "descending";
+};
+
+export type PropertyValueSortObject = PropertySort | TimestampSort;

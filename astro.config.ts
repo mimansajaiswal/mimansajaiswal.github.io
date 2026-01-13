@@ -20,10 +20,12 @@ const getSite = function () {
 		if (process.env.CF_PAGES_BRANCH !== "main") {
 			return new URL(BASE_PATH, process.env.CF_PAGES_URL).toString();
 		}
-		return new URL(
-			BASE_PATH,
-			`https://${new URL(process.env.CF_PAGES_URL).host.split(".").slice(1).join(".")}`,
-		).toString();
+		const cfUrl = new URL(process.env.CF_PAGES_URL);
+		if (cfUrl.host.endsWith(".pages.dev")) {
+			const strippedHost = cfUrl.host.split(".").slice(1).join(".");
+			return new URL(BASE_PATH, `https://${strippedHost}`).toString();
+		}
+		return new URL(BASE_PATH, process.env.CF_PAGES_URL).toString();
 	}
 	if (process.env.GITHUB_PAGES) {
 		return new URL(process.env.BASE || BASE_PATH, process.env.SITE).toString();

@@ -509,12 +509,17 @@ export class MarkdownBlockBuilder {
 				return { Id: this.nextBlockId("row"), Type: "table_row", HasChildren: false, Cells: cells };
 			}) || [];
 
+		const tableWidth = mappedRows[0]?.Cells?.length || 0;
+
 		return {
 			Id: blockId,
 			Type: "table",
 			HasChildren: false,
 			LastUpdatedTimeStamp: this.lastUpdated,
 			Table: {
+				TableWidth: tableWidth,
+				HasColumnHeader: true,
+				HasRowHeader: false,
 				Rows: mappedRows,
 			},
 		};

@@ -223,7 +223,7 @@ export interface SyncedFrom {
 export interface Toggle {
 	RichTexts: RichText[];
 	Color: string;
-	Children: Block[];
+	Children?: Block[];
 }
 
 export interface Embed {
